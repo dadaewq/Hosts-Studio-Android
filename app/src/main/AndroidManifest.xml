@@ -11,8 +11,13 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
-        <meta-data android:value="560e8dafe0f55ab876003569" android:name="UMENG_APPKEY"></meta-data>
-        <meta-data android:value="WebSite" android:name="UMENG_CHANNEL"/>
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="560e8dafe0f55ab876003569"></meta-data>
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="WebSite" />
+
         <activity
             android:name=".ui.MainActivity"
             android:label="@string/activity_editor"
@@ -33,7 +38,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.ManagePreferences"
+        <activity
+            android:name=".ui.ManagePreferences"
             android:label="@string/activity_setting"
             android:launchMode="singleTask">
             <intent-filter>
@@ -41,7 +47,8 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
-        <activity android:name=".ui.ProjectPreferences"
+        <activity
+            android:name=".ui.ProjectPreferences"
             android:label="@string/activity_project"
             android:launchMode="singleTask">
             <intent-filter>

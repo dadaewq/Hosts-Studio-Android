@@ -76,6 +76,7 @@ public abstract class StringUtils {
     // ---------------------------------------------------------------------
     // General convenience methods for working with Strings
     // ---------------------------------------------------------------------
+    private final static char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
 
     /**
      * Check that the given CharSequence is neither <code>null</code> nor of
@@ -215,6 +216,9 @@ public abstract class StringUtils {
         return false;
     }
 
+    // Delete
+    //-----------------------------------------------------------------------
+
     /**
      * Check whether the given String contains any whitespace characters.
      *
@@ -226,9 +230,6 @@ public abstract class StringUtils {
     public static boolean containsWhitespace(String str) {
         return containsWhitespace((CharSequence) str);
     }
-
-    // Delete
-    //-----------------------------------------------------------------------
 
     /**
      * <p>Deletes all whitespaces from a String as defined by
@@ -261,7 +262,6 @@ public abstract class StringUtils {
         }
         return new String(chs, 0, count);
     }
-
 
     /**
      * Trim leading and trailing whitespace from the given String.
@@ -541,6 +541,10 @@ public abstract class StringUtils {
         return replace(inString, pattern, "");
     }
 
+    // ---------------------------------------------------------------------
+    // Convenience methods for working with formatted Strings
+    // ---------------------------------------------------------------------
+
     /**
      * Delete any character in a given String.
      *
@@ -562,10 +566,6 @@ public abstract class StringUtils {
         }
         return sb.toString();
     }
-
-    // ---------------------------------------------------------------------
-    // Convenience methods for working with formatted Strings
-    // ---------------------------------------------------------------------
 
     /**
      * Quote the given String with single quotes.
@@ -855,6 +855,10 @@ public abstract class StringUtils {
         }
     }
 
+    // ---------------------------------------------------------------------
+    // Convenience methods for working with String arrays
+    // ---------------------------------------------------------------------
+
     /**
      * Determine the RFC 3066 compliant language tag, as used for the HTTP
      * "Accept-Language" header.
@@ -867,10 +871,6 @@ public abstract class StringUtils {
                 + (hasText(locale.getCountry()) ? "-" + locale.getCountry()
                 : "");
     }
-
-    // ---------------------------------------------------------------------
-    // Convenience methods for working with String arrays
-    // ---------------------------------------------------------------------
 
     /**
      * Append the given String to the given String array, returning a new array
@@ -1338,7 +1338,6 @@ public abstract class StringUtils {
         return toString(coll, ",");
     }
 
-
     public static String toString(final Bundle bundle) {
         if (bundle == null || bundle.isEmpty()) {
             return "{}";
@@ -1353,7 +1352,6 @@ public abstract class StringUtils {
         builder.append("}");
         return builder.toString();
     }
-
 
     public static String toString(SharedPreferences sp) {
         Map<String, String> map = new HashMap<String, String>();
@@ -1433,8 +1431,6 @@ public abstract class StringUtils {
     public static String toString(Object[] arr) {
         return toString(arr, ",");
     }
-
-    private final static char[] HEX_DIGITS = "0123456789ABCDEF".toCharArray();
 
     public static String bytesToHex(byte[] bytes) {
         char[] hexChars = new char[bytes.length * 2];

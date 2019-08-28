@@ -1,7 +1,5 @@
 package me.gitai.hosts.entities;
 
-import android.os.Parcel;
-import android.os.Parcelable;
 import android.text.TextUtils;
 
 import java.util.regex.Matcher;
@@ -27,7 +25,7 @@ public class Host {
     public Host(String line) {
         mRaw = line;
         mIp = line;
-        if (line.startsWith(Host.STR_COMMENT)){
+        if (line.startsWith(Host.STR_COMMENT)) {
             mIsCommented = true;
         }
         mIsValid = true;
@@ -35,129 +33,22 @@ public class Host {
     }
 
     public Host(String ip, String hostName, String comment) {
-        updata(ip,hostName,comment);
+        updata(ip, hostName, comment);
     }
 
     public Host(String line, String ip, String hostName, String comment,
-			boolean isCommented, boolean isValid) {
+                boolean isCommented, boolean isValid) {
         mRaw = line;
-    	mIp = ip;
+        mIp = ip;
         mHostName = hostName;
         mComment = comment;
         mIsCommented = isCommented;
         mIsValid = isValid;
-	}
-
-    public void updata(String ip, String hostName, String comment){
-        mIp = ip;
-        mHostName = hostName;
-        mComment = comment;
-        mIsCommented = false;
-        mIsValid = !TextUtils.isEmpty(mIp) && !TextUtils.isEmpty(mHostName)
-                && InetAddresses.isInetAddress(mIp);;
-        mRaw = toString();
-    }
-
-    public void merge(Host src) {
-        mIp = src.getIp();
-        mHostName = src.getHostName();
-        mComment = src.getComment();
-        mIsCommented = src.isCommented();
-        mIsValid = src.isValid();
-    }
-
-    public void build(){
-        if (preBuild){
-            return;
-        }
-        Matcher matcher = HOST_PATTERN.matcher(mIp);
-
-        if (matcher.find()) {
-            mIsCommented = !TextUtils.isEmpty(matcher.group(1));
-            mIp = matcher.group(2);
-            mHostName = matcher.group(3).trim();
-            mComment = matcher.group(4).trim();
-            if (TextUtils.isEmpty(mComment)) {
-                mComment = null;
-            }
-
-            mIsValid = !TextUtils.isEmpty(mIp) && !TextUtils.isEmpty(mHostName)
-                    && InetAddresses.isInetAddress(mIp);
-        }
-        preBuild = true;
-    }
-
-    public boolean isBuild(){
-        return preBuild;
-    }
-
-    public String getIp() {
-        if (!isBuild())build();
-        return mIp;
-    }
-    
-    public void setIp(String mIp) {
-        if (!isBuild())build();
-		this.mIp = mIp;
-	}
-
-    public String getHostName() {
-        if (!isBuild())build();
-        return mHostName;
-    }
-
-    public void setHostName(String mHostName) {
-        if (!isBuild())build();this.mHostName = mHostName;
-    }
-
-    public String getComment() {
-        if (!isBuild())build();
-        return mComment;
-    }
-    
-    public void setComment(String mComment) {
-        if (!isBuild())build();
-		this.mComment = mComment;
-	}
-
-    public boolean isValid() {
-        return mIsValid;
-    }
-
-    public boolean isCommented() {
-        return mIsCommented;
-    }
-
-    public void toggleComment() {
-        mIsCommented = !mIsCommented;
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder sb = new StringBuilder();
-
-        if (isBuild()){
-            if (mIsCommented) {
-                sb.append(STR_COMMENT);
-            }
-            if (mIp != null) {
-                sb.append(mIp).append(STR_SEPARATOR);
-            }
-            if (mHostName != null) {
-                sb.append(mHostName);
-            }
-            if (!TextUtils.isEmpty(mComment)) {
-                sb.append(STR_SEPARATOR).append(STR_COMMENT).append(mComment);
-            }
-            return sb.toString();
-        }else{
-            return mRaw;
-        }
     }
 
     // TODO: 预解析
-    public static Host fromString(String line,boolean preBuild) {
-        if (preBuild){
+    public static Host fromString(String line, boolean preBuild) {
+        if (preBuild) {
             return fromString(line);
         }
         return new Host(line);
@@ -186,16 +77,125 @@ public class Host {
         return new Host(line, ip, hostname, comment, isCommented, isValid);
     }
 
-    public boolean contains(String raw){
+    public void updata(String ip, String hostName, String comment) {
+        mIp = ip;
+        mHostName = hostName;
+        mComment = comment;
+        mIsCommented = false;
+        mIsValid = !TextUtils.isEmpty(mIp) && !TextUtils.isEmpty(mHostName)
+                && InetAddresses.isInetAddress(mIp);
+        ;
+        mRaw = toString();
+    }
+
+    public void merge(Host src) {
+        mIp = src.getIp();
+        mHostName = src.getHostName();
+        mComment = src.getComment();
+        mIsCommented = src.isCommented();
+        mIsValid = src.isValid();
+    }
+
+    public void build() {
+        if (preBuild) {
+            return;
+        }
+        Matcher matcher = HOST_PATTERN.matcher(mIp);
+
+        if (matcher.find()) {
+            mIsCommented = !TextUtils.isEmpty(matcher.group(1));
+            mIp = matcher.group(2);
+            mHostName = matcher.group(3).trim();
+            mComment = matcher.group(4).trim();
+            if (TextUtils.isEmpty(mComment)) {
+                mComment = null;
+            }
+
+            mIsValid = !TextUtils.isEmpty(mIp) && !TextUtils.isEmpty(mHostName)
+                    && InetAddresses.isInetAddress(mIp);
+        }
+        preBuild = true;
+    }
+
+    public boolean isBuild() {
+        return preBuild;
+    }
+
+    public String getIp() {
+        if (!isBuild()) build();
+        return mIp;
+    }
+
+    public void setIp(String mIp) {
+        if (!isBuild()) build();
+        this.mIp = mIp;
+    }
+
+    public String getHostName() {
+        if (!isBuild()) build();
+        return mHostName;
+    }
+
+    public void setHostName(String mHostName) {
+        if (!isBuild()) build();
+        this.mHostName = mHostName;
+    }
+
+    public String getComment() {
+        if (!isBuild()) build();
+        return mComment;
+    }
+
+    public void setComment(String mComment) {
+        if (!isBuild()) build();
+        this.mComment = mComment;
+    }
+
+    public boolean isValid() {
+        return mIsValid;
+    }
+
+    public boolean isCommented() {
+        return mIsCommented;
+    }
+
+    public void toggleComment() {
+        mIsCommented = !mIsCommented;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+
+        if (isBuild()) {
+            if (mIsCommented) {
+                sb.append(STR_COMMENT);
+            }
+            if (mIp != null) {
+                sb.append(mIp).append(STR_SEPARATOR);
+            }
+            if (mHostName != null) {
+                sb.append(mHostName);
+            }
+            if (!TextUtils.isEmpty(mComment)) {
+                sb.append(STR_SEPARATOR).append(STR_COMMENT).append(mComment);
+            }
+            return sb.toString();
+        } else {
+            return mRaw;
+        }
+    }
+
+    public boolean contains(String raw) {
         return mRaw.contains(raw);
     }
 
-    public boolean matcher(String reger){
+    public boolean matcher(String reger) {
         Matcher matcher = Pattern.compile(reger).matcher(mRaw);
         return matcher.find();
     }
 
-	@Override
+    @Override
     public int hashCode() {
         final int prime = 31;
         int result = 1;

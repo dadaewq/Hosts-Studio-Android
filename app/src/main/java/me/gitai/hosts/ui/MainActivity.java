@@ -29,20 +29,15 @@ import me.gitai.library.widget.MaterialDialog;
 /**
  * Created by dphdjy on 15-11-5.
  */
-public class MainActivity extends BaseActivity{
+public class MainActivity extends BaseActivity {
     private WindowsViewFlipper mViewFlipper;
     private WindowListAdapter windowListAdapter;
-
-    private List<Host> clipboard = new ArrayList<>();
-
-    private String mUrl = "location";
-
     ActionBar.OnNavigationListener navigationListener = new ActionBar.OnNavigationListener() {
         @Override
         public boolean onNavigationItemSelected(int position, long id) {
             int oldPosition = mViewFlipper.getDisplayedChild();
-            if (position != oldPosition){
-                if (position >= mViewFlipper.getChildCount()){
+            if (position != oldPosition) {
+                if (position >= mViewFlipper.getChildCount()) {
                     doCreateView(null);
                 }
                 mViewFlipper.setDisplayedChild(position);
@@ -50,14 +45,16 @@ public class MainActivity extends BaseActivity{
             return false;
         }
     };
+    private List<Host> clipboard = new ArrayList<>();
+    private String mUrl = "location";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Intent i_getvalue =getIntent();
+        Intent i_getvalue = getIntent();
 
-        Uri uri  = i_getvalue.getData();
-        if (uri != null && StringUtils.hasText(uri.toString())){
+        Uri uri = i_getvalue.getData();
+        if (uri != null && StringUtils.hasText(uri.toString())) {
             mUrl = uri.toString();
         }
 
@@ -68,14 +65,14 @@ public class MainActivity extends BaseActivity{
     protected void onDestroy() {
         super.onDestroy();
         for (int i = 0; i < mViewFlipper.getChildCount() - 1; i++) {
-            ((HostsView)mViewFlipper.getView(i)).dismiss();
+            ((HostsView) mViewFlipper.getView(i)).dismiss();
         }
     }
 
-    private void init(){
+    private void init() {
         setContentView(R.layout.activity_main);
 
-        mViewFlipper = (WindowsViewFlipper)findViewById(R.id.viewFlipper);
+        mViewFlipper = (WindowsViewFlipper) findViewById(R.id.viewFlipper);
         windowListAdapter = new WindowListAdapter(mViewFlipper);
 
         getActionBar().setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
@@ -88,16 +85,16 @@ public class MainActivity extends BaseActivity{
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        try{
+        try {
             String uri = intent.getData().toString();
             doCreateView(uri);
-        }catch(Exception ex){
+        } catch (Exception ex) {
             ToastUtil.show(ex);
         }
     }
 
-    private void doCreateView(String url){
-        if (url != null){
+    private void doCreateView(String url) {
+        if (url != null) {
             HostsView hostsView = new HostsView(this, url);
 
             registerForContextMenu(hostsView.getListView());
@@ -107,13 +104,13 @@ public class MainActivity extends BaseActivity{
             getActionBar().setSelectedNavigationItem(mViewFlipper.getChildCount() - 1);
 
             windowListAdapter.OnDate();
-        }else{
+        } else {
             Intent open_intent = new Intent(Intent.ACTION_GET_CONTENT);
             open_intent.addCategory(Intent.CATEGORY_OPENABLE);
             open_intent.setType("text/plain");
-            try{
-                startActivityForResult(open_intent,200);
-            }catch (Exception ex){
+            try {
+                startActivityForResult(open_intent, 200);
+            } catch (Exception ex) {
                 ToastUtil.show("Please install a File Manager.");
             }
 
@@ -211,9 +208,9 @@ public class MainActivity extends BaseActivity{
                 backup_intent.addCategory(Intent.CATEGORY_OPENABLE);
                 backup_intent.setType(MimeUtils.getMimeTypeFromExtension("txt"));
                 backup_intent.putExtra("android.intent.extra.TITLE", IOUtils.createFileName("hosts"));
-                try{
-                    startActivityForResult(backup_intent,100);
-                }catch(Exception ex){
+                try {
+                    startActivityForResult(backup_intent, 100);
+                } catch (Exception ex) {
                     ToastUtil.show("本功能不支持高度阉割版系统.");
                 }
 
@@ -230,7 +227,7 @@ public class MainActivity extends BaseActivity{
                 break;
             case R.id.hosts_history:
                 Intent project = new Intent(this, ProjectPreferences.class);
-                project.putExtra("project_type" , "history");
+                project.putExtra("project_type", "history");
                 project.putExtra("project_id", mViewFlipper.getCurrentView().getHash());
                 startActivity(project);
                 break;
@@ -257,7 +254,7 @@ public class MainActivity extends BaseActivity{
     public boolean onContextItemSelected(MenuItem item) {
         int id = item.getItemId();
         int index = mViewFlipper.getCurrentView().getCurrPosition();
-        switch (id){
+        switch (id) {
             case R.id.cut:
                 clipboard = mViewFlipper.getCurrentView().cut(index);
                 break;
@@ -265,7 +262,7 @@ public class MainActivity extends BaseActivity{
                 clipboard = mViewFlipper.getCurrentView().copy(index);
                 break;
             case R.id.paste:
-                mViewFlipper.getCurrentView().paste(index,clipboard);
+                mViewFlipper.getCurrentView().paste(index, clipboard);
                 ToastUtil.showId(R.string.toast_hosts_paste, clipboard.size());
                 break;
             case R.id.add:
@@ -284,9 +281,9 @@ public class MainActivity extends BaseActivity{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent intent) {
         super.onActivityResult(requestCode, resultCode, intent);
-        switch (requestCode){
+        switch (requestCode) {
             case 100:
-                if (intent!=null){
+                if (intent != null) {
                     try {
                         mViewFlipper.getCurrentView().saveAs(getContentResolver().openOutputStream(intent.getData()));
                     } catch (Exception e) {
@@ -295,10 +292,10 @@ public class MainActivity extends BaseActivity{
                 }
                 break;
             case 200:
-                if (intent!=null){
+                if (intent != null) {
                     String path = FileUtils.getPath(this, intent.getData());
-                    if (StringUtils.hasText(path)){
-                        doCreateView("file://"+path);
+                    if (StringUtils.hasText(path)) {
+                        doCreateView("file://" + path);
                     }
                 }
                 break;

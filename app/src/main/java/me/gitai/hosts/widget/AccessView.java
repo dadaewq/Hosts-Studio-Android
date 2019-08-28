@@ -1,9 +1,6 @@
 package me.gitai.hosts.widget;
 
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -28,7 +25,6 @@ import me.gitai.hosts.R;
 import me.gitai.hosts.entities.User;
 import me.gitai.hosts.utils.ProgressDialogUtil;
 import me.gitai.hosts.utils.XutilsHttpClient;
-import me.gitai.library.util.SharedPreferencesUtil;
 import me.gitai.library.util.StringUtils;
 import me.gitai.library.util.ToastUtil;
 import me.gitai.library.widget.MaterialDialog;
@@ -51,55 +47,6 @@ public class AccessView extends RelativeLayout implements View.OnClickListener {
     private ProgressDialogUtil mProgressDialog;
 
     private OnLoginStateChange loginStateChange;
-
-    public AccessView(Context context) {
-        super(context);
-        initLayout(context);
-    }
-
-    private void initLayout(Context context) {
-        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.view_access, this, true);
-
-        bitmapUtils = new BitmapUtils(context);
-
-        mAvatar = (ImageView)view.findViewById(R.id.iv_avatar);
-        mUsername = (TextView)view.findViewById(R.id.tv_username);
-        mEmail = (TextView)view.findViewById(R.id.tv_email);
-
-        view.setOnClickListener(this);
-    }
-
-    public void setOnLoginStateChange(OnLoginStateChange listen){
-        loginStateChange = listen;
-    }
-
-    public void refesh(){
-        user = new User();
-        setAvatar(user.getAvatar());
-        setUsername(user.getUsername());
-        setEmail(user.getEmail());
-        if (loginStateChange!=null){
-            loginStateChange.OnChange(isLogin());
-        }
-    }
-
-    public void setAvatar(String url){
-        bitmapUtils.display(mAvatar, url);
-    }
-
-    public void setUsername(String username) {
-        this.mUsername.setText(username);
-    }
-
-    public void setEmail(String email) {
-        this.mEmail.setText(email);
-    }
-
-    public boolean isLogin(){
-        return user.isLogin();
-    }
-
     private MaterialDialog.OnClickListener onPositive = new MaterialDialog.OnClickListener() {
 
         @Override
@@ -107,7 +54,7 @@ public class AccessView extends RelativeLayout implements View.OnClickListener {
             String username = et_username.getText().toString();
             String password = et_password.getText().toString();
 
-            if (StringUtils.hasText(username)&&StringUtils.hasText(password)){
+            if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
                 mProgressDialog = new ProgressDialogUtil(getContext()).show();
 
                 RequestParams params = new RequestParams();
@@ -158,12 +105,60 @@ public class AccessView extends RelativeLayout implements View.OnClickListener {
                     }
                 });
                 return true;
-            }else{
+            } else {
                 ToastUtil.showId(R.string.toast_username_or_password_is_empty);
                 return false;
             }
         }
     };
+
+    public AccessView(Context context) {
+        super(context);
+        initLayout(context);
+    }
+
+    private void initLayout(Context context) {
+        LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view = inflater.inflate(R.layout.view_access, this, true);
+
+        bitmapUtils = new BitmapUtils(context);
+
+        mAvatar = (ImageView) view.findViewById(R.id.iv_avatar);
+        mUsername = (TextView) view.findViewById(R.id.tv_username);
+        mEmail = (TextView) view.findViewById(R.id.tv_email);
+
+        view.setOnClickListener(this);
+    }
+
+    public void setOnLoginStateChange(OnLoginStateChange listen) {
+        loginStateChange = listen;
+    }
+
+    public void refesh() {
+        user = new User();
+        setAvatar(user.getAvatar());
+        setUsername(user.getUsername());
+        setEmail(user.getEmail());
+        if (loginStateChange != null) {
+            loginStateChange.OnChange(isLogin());
+        }
+    }
+
+    public void setAvatar(String url) {
+        bitmapUtils.display(mAvatar, url);
+    }
+
+    public void setUsername(String username) {
+        this.mUsername.setText(username);
+    }
+
+    public void setEmail(String email) {
+        this.mEmail.setText(email);
+    }
+
+    public boolean isLogin() {
+        return user.isLogin();
+    }
 
     @Override
     public void onClick(View view) {
@@ -182,7 +177,7 @@ public class AccessView extends RelativeLayout implements View.OnClickListener {
                 .show();
     }
 
-    public interface OnLoginStateChange{
-         void OnChange(boolean login);
+    public interface OnLoginStateChange {
+        void OnChange(boolean login);
     }
 }

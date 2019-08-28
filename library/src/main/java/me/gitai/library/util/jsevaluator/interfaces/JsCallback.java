@@ -5,5 +5,5 @@ package me.gitai.library.util.jsevaluator.interfaces;
  */
 
 public interface JsCallback {
-	public abstract void onResult(String value);
+    public abstract void onResult(String value);
 }

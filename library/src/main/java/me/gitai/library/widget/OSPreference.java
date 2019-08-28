@@ -25,7 +25,7 @@ public class OSPreference extends Preference {
         init();
     }
 
-    private void init(){
+    private void init() {
         setSummary(String.format(
                 "Android %s;%s/%s(%s)",
                 Build.VERSION.RELEASE,

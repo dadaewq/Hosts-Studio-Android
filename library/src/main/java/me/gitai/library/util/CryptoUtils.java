@@ -5,18 +5,19 @@ package me.gitai.library.util;
 
 import android.util.Base64;
 
-import javax.crypto.Cipher;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.IvParameterSpec;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 import java.util.Arrays;
+
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 
 import me.gitai.library.Charsets;
 
@@ -380,6 +381,7 @@ public final class CryptoUtils {
 
         private static final char[] FIRST_CHAR = new char[256];
         private static final char[] SECOND_CHAR = new char[256];
+        private static final byte[] DIGITS = new byte['f' + 1];
 
         static {
             for (int i = 0; i < 256; i++) {
@@ -387,8 +389,6 @@ public final class CryptoUtils {
                 SECOND_CHAR[i] = HEX_DIGITS[i & 0xF];
             }
         }
-
-        private static final byte[] DIGITS = new byte['f' + 1];
 
         static {
             for (int i = 0; i <= 'F'; i++) {

@@ -1,11 +1,9 @@
 package me.gitai.library.ui;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
-import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -16,22 +14,22 @@ import me.gitai.library.R;
 import me.gitai.library.util.L;
 
 @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-public class BasePreferenceActivity extends PreferenceActivity{
-	private boolean mPaused;
+public class BasePreferenceActivity extends PreferenceActivity {
+    private boolean mPaused;
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		L.d();
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        L.d();
 
-		setContentView(R.layout.view_list_empty);
+        setContentView(R.layout.view_list_empty);
         getListView().setEmptyView(getWindow().findViewById(R.id.empty));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            getListView().setPadding(0,0,0,0);
+            getListView().setPadding(0, 0, 0, 0);
         }
 
-		//initSystemBar
+        //initSystemBar
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP) {
             setFitsSystemWindows(true);
             setTranslucentStatus(true);
@@ -40,34 +38,34 @@ public class BasePreferenceActivity extends PreferenceActivity{
             tintManager.setStatusBarTintResource(R.color.primary_dark);
         }
 
-        if (getActionBar() != null){
+        if (getActionBar() != null) {
             getActionBar().setDisplayShowHomeEnabled(false);
         }
-	}
+    }
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		L.d();
+    @Override
+    protected void onResume() {
+        super.onResume();
+        L.d();
 
-		mPaused = false;
-	}
+        mPaused = false;
+    }
 
-	@Override
+    @Override
     protected void onPostResume() {
         super.onPostResume();
         L.d();
     }
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-		L.d();
+    @Override
+    protected void onPause() {
+        super.onPause();
+        L.d();
 
-		mPaused = true;
-	}
+        mPaused = true;
+    }
 
-	@Override
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         L.d();
@@ -120,21 +118,21 @@ public class BasePreferenceActivity extends PreferenceActivity{
         getActionBar().setSubtitle(resId);
     }
 
-	@TargetApi(14)
-	private void setFitsSystemWindows(boolean on) {
-		((ViewGroup)findViewById(android.R.id.content)).getChildAt(0).setFitsSystemWindows(on);
-	}
+    @TargetApi(14)
+    private void setFitsSystemWindows(boolean on) {
+        ((ViewGroup) findViewById(android.R.id.content)).getChildAt(0).setFitsSystemWindows(on);
+    }
 
-	@TargetApi(19)
-	private void setTranslucentStatus(boolean on) {
-		Window win = getWindow();
-		WindowManager.LayoutParams winParams = win.getAttributes();
-		final int bits = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
-		if (on) {
-			winParams.flags |= bits;
-		} else {
-			winParams.flags &= ~bits;
-		}
-		win.setAttributes(winParams);
-	}
+    @TargetApi(19)
+    private void setTranslucentStatus(boolean on) {
+        Window win = getWindow();
+        WindowManager.LayoutParams winParams = win.getAttributes();
+        final int bits = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS;
+        if (on) {
+            winParams.flags |= bits;
+        } else {
+            winParams.flags &= ~bits;
+        }
+        win.setAttributes(winParams);
+    }
 }

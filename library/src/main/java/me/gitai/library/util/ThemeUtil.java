@@ -2,8 +2,6 @@ package me.gitai.library.util;
 
 import android.content.Context;
 
-import me.gitai.library.BaseApplication;
-
 /**
  * Created by dphdjy on 15-10-22.
  */

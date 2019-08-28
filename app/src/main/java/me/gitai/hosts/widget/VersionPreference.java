@@ -1,7 +1,6 @@
 package me.gitai.hosts.widget;
 
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -39,7 +38,7 @@ public class VersionPreference extends Preference implements Preference.OnPrefer
     }
 
 
-    private void init(){
+    private void init() {
         setSummary(
                 String.format(
                         "%s %s-%s(%s)",
@@ -54,9 +53,9 @@ public class VersionPreference extends Preference implements Preference.OnPrefer
 
     @Override
     public boolean onPreferenceClick(Preference preference) {
-        if (!isLaster){
+        if (!isLaster) {
             new Updata().execute();
-        }else{
+        } else {
             ToastUtil.show(getContext().getString(R.string.toast_application_is_up_to_date));
         }
         return false;
@@ -64,6 +63,7 @@ public class VersionPreference extends Preference implements Preference.OnPrefer
 
     public class Updata extends UpdataTask {
         ProgressDialogUtil mProgressDialog;
+
         @Override
         protected void onPreExecute() {
             mProgressDialog = new ProgressDialogUtil(getContext()).setMessage(R.string.updata).show();
@@ -76,11 +76,11 @@ public class VersionPreference extends Preference implements Preference.OnPrefer
                 mProgressDialog.dismiss();
             }
             //TODO:<
-            if (result!=null && BuildConfig.VERSION_CODE < result.getVersionCode()) {
+            if (result != null && BuildConfig.VERSION_CODE < result.getVersionCode()) {
                 AlertDialog.Builder builer = new AlertDialog.Builder(getContext());
                 builer.setTitle(result.getTitle());
                 builer.setMessage(Html.fromHtml(result.getMsg()));
-                if (result.getUrl().length()>10){
+                if (result.getUrl().length() > 10) {
                     builer.setPositiveButton(getContext().getString(R.string.updata), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             Uri uri = Uri.parse(result.getUrl());
@@ -91,7 +91,7 @@ public class VersionPreference extends Preference implements Preference.OnPrefer
                         }
                     });
                 }
-                if (result.getLevelCode() == 1){
+                if (result.getLevelCode() == 1) {
                     builer.setNegativeButton(getContext().getString(R.string.btn_cancel), new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
 
@@ -100,7 +100,7 @@ public class VersionPreference extends Preference implements Preference.OnPrefer
                 }
                 AlertDialog dialog = builer.create();
                 dialog.show();
-            }else{
+            } else {
                 isLaster = true;
                 ToastUtil.show(getContext().getString(R.string.toast_application_is_up_to_date));
             }

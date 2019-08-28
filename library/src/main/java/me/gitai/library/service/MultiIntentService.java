@@ -1,6 +1,5 @@
 package me.gitai.library.service;
 
-import android.app.Service;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.IBinder;
@@ -31,18 +30,16 @@ public abstract class MultiIntentService extends BaseService {
 
     private static volatile long sSequence = 0L;
     private final Object mLock = new Object();
+    private ExecutorService mExecutor;
+    private Handler mHandler;
+    private volatile Map<String, Future<?>> mFutures;
+    private volatile AtomicInteger mRetainCount;
     private final Runnable mAutoCloseRunnable = new Runnable() {
         @Override
         public void run() {
             autoClose();
         }
     };
-    private ExecutorService mExecutor;
-    private Handler mHandler;
-
-    private volatile Map<String, Future<?>> mFutures;
-    private volatile AtomicInteger mRetainCount;
-
     private boolean mAutoCloseEnable;
     private long mAutoCloseTime;
 

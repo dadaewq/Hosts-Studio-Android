@@ -17,7 +17,7 @@ import me.gitai.library.util.ActivityUtils;
 public class WindowListAdapter extends BaseAdapter {
     private final WindowsViewFlipper mViewFlipper;
 
-    public WindowListAdapter(WindowsViewFlipper mViewFlipper){
+    public WindowListAdapter(WindowsViewFlipper mViewFlipper) {
         this.mViewFlipper = mViewFlipper;
     }
 
@@ -41,17 +41,17 @@ public class WindowListAdapter extends BaseAdapter {
         Activity act = ActivityUtils.findActivityFromContext(parent.getContext());
         View child = act.getLayoutInflater().inflate(R.layout.windows_list_item, parent, false);
 
-        TextView tv_label = (TextView)child.findViewById(R.id.windows_label);
+        TextView tv_label = (TextView) child.findViewById(R.id.windows_label);
 
-        if (i >= getCount() - 1){
+        if (i >= getCount() - 1) {
             tv_label.setText("New +");
-        }else{
+        } else {
             tv_label.setText(getItem(i).getTitle());
         }
         return child;
     }
 
-    public void OnDate(){
+    public void OnDate() {
         notifyDataSetChanged();
     }
 }

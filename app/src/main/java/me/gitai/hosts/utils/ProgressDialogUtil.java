@@ -12,7 +12,7 @@ public class ProgressDialogUtil {
     private ProgressDialog mProgressDialog;
     private Context ctx;
 
-    public ProgressDialogUtil(Context ctx){
+    public ProgressDialogUtil(Context ctx) {
         this.ctx = ctx;
 
         mProgressDialog = new ProgressDialog(ctx);
@@ -22,17 +22,17 @@ public class ProgressDialogUtil {
         mProgressDialog.setMessage(ctx.getString(R.string.loading));
     }
 
-    public ProgressDialogUtil setMessage(int i){
+    public ProgressDialogUtil setMessage(int i) {
         mProgressDialog.setMessage(ctx.getString(i));
         return this;
     }
 
-    public ProgressDialogUtil show(){
+    public ProgressDialogUtil show() {
         mProgressDialog.show();
         return this;
     }
 
-    public ProgressDialogUtil dismiss(){
+    public ProgressDialogUtil dismiss() {
         if (mProgressDialog != null) {
             mProgressDialog.dismiss();
         }

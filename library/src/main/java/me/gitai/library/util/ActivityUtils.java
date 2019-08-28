@@ -8,13 +8,13 @@ import android.content.ContextWrapper;
  * Created by dphdjy on 15-11-5.
  */
 public class ActivityUtils {
-    public static Activity findActivityFromContext(Context ctx){
-        if (ctx != null){
-            if (ctx instanceof Activity){
-                return (Activity)ctx;
+    public static Activity findActivityFromContext(Context ctx) {
+        if (ctx != null) {
+            if (ctx instanceof Activity) {
+                return (Activity) ctx;
             }
-            if(ctx instanceof ContextWrapper){
-                ContextWrapper cw = (ContextWrapper)ctx;
+            if (ctx instanceof ContextWrapper) {
+                ContextWrapper cw = (ContextWrapper) ctx;
                 return findActivityFromContext(cw.getBaseContext());
             }
         }

@@ -7,27 +7,20 @@ package me.gitai.library.widget;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.os.Build;
 import android.os.Build.VERSION;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
-import android.view.View.OnClickListener;
-import android.view.View.OnFocusChangeListener;
-import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.LinearLayout.LayoutParams;
 
-import me.gitai.library.BuildConfig;
 import me.gitai.library.R;
 
 public class MaterialDialog {
@@ -55,8 +48,12 @@ public class MaterialDialog {
         this.mContext = context;
     }
 
+    private static boolean isLollipop() {
+        return VERSION.SDK_INT >= 21;
+    }
+
     public void show() {
-        if(!this.mHasShow) {
+        if (!this.mHasShow) {
             this.mBuilder = new Builder();
         } else {
             this.mAlertDialog.show();
@@ -65,78 +62,78 @@ public class MaterialDialog {
         this.mHasShow = true;
     }
 
-    public MaterialDialog setView(int i) {
-        return setView(i, null);
-    }
-
-    public MaterialDialog setView(int i,OnViewInflateListener listener) {
+    public MaterialDialog setView(int i, OnViewInflateListener listener) {
         View v = LayoutInflater.from(mContext).inflate(i, null);
         //View v = ((LayoutInflater)this.mContext.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(i, null);
-        if (listener!=null)
+        if (listener != null)
             listener.onInflate(v);
         return setView(v);
     }
 
+    public View getView() {
+        return this.mView;
+    }
+
+    public MaterialDialog setView(int i) {
+        return setView(i, null);
+    }
+
     public MaterialDialog setView(View view) {
         this.mView = view;
-        if(this.mBuilder != null) {
+        if (this.mBuilder != null) {
             this.mBuilder.setView(view);
         }
 
         return this;
     }
 
-    public View getView(){
-        return this.mView;
-    }
-
-    public MaterialDialog setChildsVisibility(int... ids){
+    public MaterialDialog setChildsVisibility(int... ids) {
         for (int i = 0; i < ids.length; i++) {
             this.mView.findViewById(ids[i]).setVisibility(View.VISIBLE);
         }
         return this;
     }
 
-    public MaterialDialog setContentView(int i) {
-        return setContentView(i,null);
-    }
-
-    public MaterialDialog setContentView(int i,OnViewInflateListener listener) {
+    public MaterialDialog setContentView(int i, OnViewInflateListener listener) {
         View v = LayoutInflater.from(mContext).inflate(i, null);
 
         //View v = ((LayoutInflater)this.mContext.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE)).inflate(i, null);
-        if (listener!=null)
+        if (listener != null)
             listener.onInflate(v);
         return setContentView(v);
     }
 
+    public View getContentView() {
+        return this.mMessageContentView;
+    }
+
+    public MaterialDialog setContentView(int i) {
+        return setContentView(i, null);
+    }
+
     public MaterialDialog setContentView(View view) {
         this.mMessageContentView = view;
-        if(this.mBuilder != null) {
+        if (this.mBuilder != null) {
             this.mBuilder.setContentView(this.mMessageContentView);
         }
 
         return this;
     }
 
-    public View getContentView(){
-        return this.mMessageContentView;
-    }
-
-    public View getChildView(int id){
+    public View getChildView(int id) {
         return getContentView().findViewById(id);
     }
 
-    public MaterialDialog setText(int id, String text){
-        ((EditText)getChildView(id)).setText(text);
+    public MaterialDialog setText(int id, String text) {
+        ((EditText) getChildView(id)).setText(text);
         return this;
     }
 
-    public String getText(int id){
-        return ((TextView)getChildView(id)).getText().toString();
+    public String getText(int id) {
+        return ((TextView) getChildView(id)).getText().toString();
     }
 
-    public MaterialDialog setContentChildsVisibility(int... ids){
+    public MaterialDialog setContentChildsVisibility(int... ids) {
         for (int i = 0; i < ids.length; i++) {
             this.mMessageContentView.findViewById(ids[i]).setVisibility(View.VISIBLE);
         }
@@ -145,7 +142,7 @@ public class MaterialDialog {
 
     public MaterialDialog setBackground(Drawable drawable) {
         this.mBackgroundDrawable = drawable;
-        if(this.mBuilder != null) {
+        if (this.mBuilder != null) {
             this.mBuilder.setBackground(this.mBackgroundDrawable);
         }
 
@@ -154,7 +151,7 @@ public class MaterialDialog {
 
     public MaterialDialog setBackgroundResource(int resId) {
         this.mBackgroundResId = resId;
-        if(this.mBuilder != null) {
+        if (this.mBuilder != null) {
             this.mBuilder.setBackgroundResource(this.mBackgroundResId);
         }
 
@@ -167,16 +164,12 @@ public class MaterialDialog {
 
     private int dip2px(float dpValue) {
         float scale = this.mContext.getResources().getDisplayMetrics().density;
-        return (int)(dpValue * scale + 0.5F);
-    }
-
-    private static boolean isLollipop() {
-        return Build.VERSION.SDK_INT >= 21;
+        return (int) (dpValue * scale + 0.5F);
     }
 
     public MaterialDialog setTitle(int resId) {
         this.mTitleResId = resId;
-        if(this.mBuilder != null) {
+        if (this.mBuilder != null) {
             this.mBuilder.setTitle(resId);
         }
 
@@ -185,7 +178,7 @@ public class MaterialDialog {
 
     public MaterialDialog setTitle(CharSequence title) {
         this.mTitle = title;
-        if(this.mBuilder != null) {
+        if (this.mBuilder != null) {
             this.mBuilder.setTitle(title);
         }
 
@@ -194,7 +187,7 @@ public class MaterialDialog {
 
     public MaterialDialog setMessage(int resId) {
         this.mMessageResId = resId;
-        if(this.mBuilder != null) {
+        if (this.mBuilder != null) {
             this.mBuilder.setMessage(resId);
         }
 
@@ -203,7 +196,7 @@ public class MaterialDialog {
 
     public MaterialDialog setMessage(CharSequence message) {
         this.mMessage = message;
-        if(this.mBuilder != null) {
+        if (this.mBuilder != null) {
             this.mBuilder.setMessage(message);
         }
 
@@ -225,18 +218,18 @@ public class MaterialDialog {
         this.mPositiveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(listener!=null){
-                    if (MaterialDialog.this != null){
-                        if (listener.onClick(v,MaterialDialog.this)){
+                if (listener != null) {
+                    if (MaterialDialog.this != null) {
+                        if (listener.onClick(v, MaterialDialog.this)) {
                             MaterialDialog.this.dismiss();
                         }
                     }
-                }else{
+                } else {
                     MaterialDialog.this.dismiss();
                 }
             }
         });
-        if(isLollipop()) {
+        if (isLollipop()) {
             this.mPositiveButton.setBackgroundResource(android.R.color.transparent);
         }
 
@@ -258,18 +251,18 @@ public class MaterialDialog {
         this.mPositiveButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(listener!=null){
-                    if (MaterialDialog.this != null){
-                        if (listener.onClick(v,MaterialDialog.this)){
+                if (listener != null) {
+                    if (MaterialDialog.this != null) {
+                        if (listener.onClick(v, MaterialDialog.this)) {
                             MaterialDialog.this.dismiss();
                         }
                     }
-                }else{
+                } else {
                     MaterialDialog.this.dismiss();
                 }
             }
         });
-        if(isLollipop()) {
+        if (isLollipop()) {
             this.mPositiveButton.setBackgroundResource(android.R.color.transparent);
         }
 
@@ -288,18 +281,18 @@ public class MaterialDialog {
         this.mNegativeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(listener!=null){
-                    if (MaterialDialog.this != null){
-                        if (listener.onClick(v,MaterialDialog.this)){
+                if (listener != null) {
+                    if (MaterialDialog.this != null) {
+                        if (listener.onClick(v, MaterialDialog.this)) {
                             MaterialDialog.this.dismiss();
                         }
                     }
-                }else{
+                } else {
                     MaterialDialog.this.dismiss();
                 }
             }
         });
-        if(isLollipop()) {
+        if (isLollipop()) {
             this.mNegativeButton.setBackgroundResource(android.R.color.transparent);
         }
 
@@ -318,18 +311,18 @@ public class MaterialDialog {
         this.mNegativeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(listener!=null){
-                    if (MaterialDialog.this != null){
-                        if (listener.onClick(v,MaterialDialog.this)){
+                if (listener != null) {
+                    if (MaterialDialog.this != null) {
+                        if (listener.onClick(v, MaterialDialog.this)) {
                             MaterialDialog.this.dismiss();
                         }
                     }
-                }else{
+                } else {
                     MaterialDialog.this.dismiss();
                 }
             }
         });
-        if(isLollipop()) {
+        if (isLollipop()) {
             this.mNegativeButton.setBackgroundResource(android.R.color.transparent);
         }
 
@@ -338,7 +331,7 @@ public class MaterialDialog {
 
     public MaterialDialog setCanceledOnTouchOutside(boolean cancel) {
         this.mCancel = cancel;
-        if(this.mBuilder != null) {
+        if (this.mBuilder != null) {
             this.mBuilder.setCanceledOnTouchOutside(this.mCancel);
         }
 
@@ -350,6 +343,14 @@ public class MaterialDialog {
         return this;
     }
 
+    public interface OnClickListener {
+        boolean onClick(View v, MaterialDialog materialDialog);
+    }
+
+    public interface OnViewInflateListener {
+        boolean onInflate(View v);
+    }
+
     private class Builder {
         private TextView mTitleView;
         private TextView mMessageView;
@@ -357,55 +358,55 @@ public class MaterialDialog {
         private LinearLayout mButtonLayout;
 
         private Builder() {
-            MaterialDialog.this.mAlertDialog = (new android.app.AlertDialog.Builder(MaterialDialog.this.mContext)).create();
+            MaterialDialog.this.mAlertDialog = (new AlertDialog.Builder(MaterialDialog.this.mContext)).create();
             MaterialDialog.this.mAlertDialog.getWindow();
-                    //.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT); //TODO: 全局
+            //.setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT); //TODO: 全局
             MaterialDialog.this.mAlertDialog.show();
             MaterialDialog.this.mAlertDialog.getWindow().clearFlags(131080);
             MaterialDialog.this.mAlertDialog.getWindow().setSoftInputMode(4);
             this.mAlertDialogWindow = MaterialDialog.this.mAlertDialog.getWindow();
-            View contv = LayoutInflater.from(MaterialDialog.this.mContext).inflate(R.layout.layout_materialdialog, (ViewGroup)null);
+            View contv = LayoutInflater.from(MaterialDialog.this.mContext).inflate(R.layout.layout_materialdialog, (ViewGroup) null);
             contv.setFocusable(true);
             contv.setFocusableInTouchMode(true);
             this.mAlertDialogWindow.setBackgroundDrawableResource(R.drawable.material_dialog_window);
             this.mAlertDialogWindow.setContentView(contv);
             new android.view.WindowManager.LayoutParams(-2, -2, 2002, 131072, -3);
-            this.mTitleView = (TextView)this.mAlertDialogWindow.findViewById(R.id.title);
-            this.mMessageView = (TextView)this.mAlertDialogWindow.findViewById(R.id.message);
-            this.mButtonLayout = (LinearLayout)this.mAlertDialogWindow.findViewById(R.id.buttonLayout);
+            this.mTitleView = (TextView) this.mAlertDialogWindow.findViewById(R.id.title);
+            this.mMessageView = (TextView) this.mAlertDialogWindow.findViewById(R.id.message);
+            this.mButtonLayout = (LinearLayout) this.mAlertDialogWindow.findViewById(R.id.buttonLayout);
             LinearLayout linearLayout;
-            if(MaterialDialog.this.mView != null) {
-                linearLayout = (LinearLayout)this.mAlertDialogWindow.findViewById(R.id.contentView);
+            if (MaterialDialog.this.mView != null) {
+                linearLayout = (LinearLayout) this.mAlertDialogWindow.findViewById(R.id.contentView);
                 linearLayout.removeAllViews();
                 linearLayout.addView(MaterialDialog.this.mView);
             }
 
-            if(MaterialDialog.this.mTitleResId != 0) {
+            if (MaterialDialog.this.mTitleResId != 0) {
                 this.setTitle(MaterialDialog.this.mTitleResId);
             }
 
-            if(MaterialDialog.this.mTitle != null) {
+            if (MaterialDialog.this.mTitle != null) {
                 this.setTitle(MaterialDialog.this.mTitle);
             }
 
-            if(MaterialDialog.this.mTitle == null && MaterialDialog.this.mTitleResId == 0) {
+            if (MaterialDialog.this.mTitle == null && MaterialDialog.this.mTitleResId == 0) {
                 this.mTitleView.setVisibility(View.GONE);
             }
 
-            if(MaterialDialog.this.mMessageResId != 0) {
+            if (MaterialDialog.this.mMessageResId != 0) {
                 this.setMessage(MaterialDialog.this.mMessageResId);
             }
 
-            if(MaterialDialog.this.mMessage != null) {
+            if (MaterialDialog.this.mMessage != null) {
                 this.setMessage(MaterialDialog.this.mMessage);
             }
 
-            if(MaterialDialog.this.mPositiveButton != null) {
+            if (MaterialDialog.this.mPositiveButton != null) {
                 this.mButtonLayout.addView(MaterialDialog.this.mPositiveButton);
             }
 
-            if(MaterialDialog.this.mLayoutParams != null && MaterialDialog.this.mNegativeButton != null) {
-                if(this.mButtonLayout.getChildCount() > 0) {
+            if (MaterialDialog.this.mLayoutParams != null && MaterialDialog.this.mNegativeButton != null) {
+                if (this.mButtonLayout.getChildCount() > 0) {
                     MaterialDialog.this.mLayoutParams.setMargins(MaterialDialog.this.dip2px(12.0F), 0, 0, MaterialDialog.this.dip2px(9.0F));
                     MaterialDialog.this.mNegativeButton.setLayoutParams(MaterialDialog.this.mLayoutParams);
                     this.mButtonLayout.addView(MaterialDialog.this.mNegativeButton, 1);
@@ -415,26 +416,26 @@ public class MaterialDialog {
                 }
             }
 
-            if(MaterialDialog.this.mBackgroundResId != 0) {
-                linearLayout = (LinearLayout)this.mAlertDialogWindow.findViewById(R.id.material_background);
+            if (MaterialDialog.this.mBackgroundResId != 0) {
+                linearLayout = (LinearLayout) this.mAlertDialogWindow.findViewById(R.id.material_background);
                 linearLayout.setBackgroundResource(MaterialDialog.this.mBackgroundResId);
             }
 
-            if(MaterialDialog.this.mBackgroundDrawable != null) {
-                linearLayout = (LinearLayout)this.mAlertDialogWindow.findViewById(R.id.material_background);
-                if (VERSION.SDK_INT > 15){
+            if (MaterialDialog.this.mBackgroundDrawable != null) {
+                linearLayout = (LinearLayout) this.mAlertDialogWindow.findViewById(R.id.material_background);
+                if (VERSION.SDK_INT > 15) {
                     linearLayout.setBackground(MaterialDialog.this.mBackgroundDrawable);
-                }else{
+                } else {
                     linearLayout.setBackgroundDrawable(MaterialDialog.this.mBackgroundDrawable);
                 }
             }
 
-            if(MaterialDialog.this.mMessageContentView != null) {
+            if (MaterialDialog.this.mMessageContentView != null) {
                 this.setContentView(MaterialDialog.this.mMessageContentView);
             }
 
             MaterialDialog.this.mAlertDialog.setCanceledOnTouchOutside(MaterialDialog.this.mCancel);
-            if(MaterialDialog.this.mOnDismissListener != null) {
+            if (MaterialDialog.this.mOnDismissListener != null) {
                 MaterialDialog.this.mAlertDialog.setOnDismissListener(MaterialDialog.this.mOnDismissListener);
             }
 
@@ -481,7 +482,7 @@ public class MaterialDialog {
             button.setGravity(17);
             button.setPadding(0, 0, 0, MaterialDialog.this.dip2px(8.0F));
             button.setOnClickListener(listener);
-            if(this.mButtonLayout.getChildCount() > 0) {
+            if (this.mButtonLayout.getChildCount() > 0) {
                 params.setMargins(20, 0, 10, MaterialDialog.this.dip2px(9.0F));
                 button.setLayoutParams(params);
                 this.mButtonLayout.addView(button, 1);
@@ -493,35 +494,35 @@ public class MaterialDialog {
         }
 
         public void setView(View view) {
-            LinearLayout l = (LinearLayout)this.mAlertDialogWindow.findViewById(R.id.contentView);
+            LinearLayout l = (LinearLayout) this.mAlertDialogWindow.findViewById(R.id.contentView);
             l.removeAllViews();
-            android.view.ViewGroup.LayoutParams layoutParams = new android.view.ViewGroup.LayoutParams(-1, -2);
+            ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(-1, -2);
             view.setLayoutParams(layoutParams);
             view.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 public void onFocusChange(View v, boolean hasFocus) {
                     System.out.println("-->" + hasFocus);
                     Builder.this.mAlertDialogWindow.setSoftInputMode(5);
-                    InputMethodManager imm = (InputMethodManager)MaterialDialog.this.mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
+                    InputMethodManager imm = (InputMethodManager) MaterialDialog.this.mContext.getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.toggleSoftInput(2, 1);
                 }
             });
             l.addView(view);
-            if(view instanceof ViewGroup) {
-                ViewGroup viewGroup = (ViewGroup)view;
+            if (view instanceof ViewGroup) {
+                ViewGroup viewGroup = (ViewGroup) view;
 
                 int i;
-                for(i = 0; i < viewGroup.getChildCount(); ++i) {
-                    if(viewGroup.getChildAt(i) instanceof EditText) {
-                        EditText autoCompleteTextView = (EditText)viewGroup.getChildAt(i);
+                for (i = 0; i < viewGroup.getChildCount(); ++i) {
+                    if (viewGroup.getChildAt(i) instanceof EditText) {
+                        EditText autoCompleteTextView = (EditText) viewGroup.getChildAt(i);
                         autoCompleteTextView.setFocusable(true);
                         autoCompleteTextView.requestFocus();
                         autoCompleteTextView.setFocusableInTouchMode(true);
                     }
                 }
 
-                for(i = 0; i < viewGroup.getChildCount(); ++i) {
-                    if(viewGroup.getChildAt(i) instanceof AutoCompleteTextView) {
-                        AutoCompleteTextView var7 = (AutoCompleteTextView)viewGroup.getChildAt(i);
+                for (i = 0; i < viewGroup.getChildCount(); ++i) {
+                    if (viewGroup.getChildAt(i) instanceof AutoCompleteTextView) {
+                        AutoCompleteTextView var7 = (AutoCompleteTextView) viewGroup.getChildAt(i);
                         var7.setFocusable(true);
                         var7.requestFocus();
                         var7.setFocusableInTouchMode(true);
@@ -532,17 +533,17 @@ public class MaterialDialog {
         }
 
         public void setContentView(View contentView) {
-            android.view.ViewGroup.LayoutParams layoutParams = new android.view.ViewGroup.LayoutParams(-1, -2);
+            ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(-1, -2);
             contentView.setLayoutParams(layoutParams);
-            LinearLayout linearLayout = (LinearLayout)this.mAlertDialogWindow.findViewById(R.id.message_content_view);
-            if(linearLayout != null) {
+            LinearLayout linearLayout = (LinearLayout) this.mAlertDialogWindow.findViewById(R.id.message_content_view);
+            if (linearLayout != null) {
                 linearLayout.removeAllViews();
                 linearLayout.addView(contentView);
             }
 
-            for(int i = 0; i < linearLayout.getChildCount(); ++i) {
-                if(linearLayout.getChildAt(i) instanceof AutoCompleteTextView) {
-                    AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView)linearLayout.getChildAt(i);
+            for (int i = 0; i < linearLayout.getChildCount(); ++i) {
+                if (linearLayout.getChildAt(i) instanceof AutoCompleteTextView) {
+                    AutoCompleteTextView autoCompleteTextView = (AutoCompleteTextView) linearLayout.getChildAt(i);
                     autoCompleteTextView.setFocusable(true);
                     autoCompleteTextView.requestFocus();
                     autoCompleteTextView.setFocusableInTouchMode(true);
@@ -552,25 +553,17 @@ public class MaterialDialog {
         }
 
         public void setBackground(Drawable drawable) {
-            LinearLayout linearLayout = (LinearLayout)this.mAlertDialogWindow.findViewById(R.id.material_background);
+            LinearLayout linearLayout = (LinearLayout) this.mAlertDialogWindow.findViewById(R.id.material_background);
             linearLayout.setBackground(drawable);
         }
 
         public void setBackgroundResource(int resId) {
-            LinearLayout linearLayout = (LinearLayout)this.mAlertDialogWindow.findViewById(R.id.material_background);
+            LinearLayout linearLayout = (LinearLayout) this.mAlertDialogWindow.findViewById(R.id.material_background);
             linearLayout.setBackgroundResource(resId);
         }
 
         public void setCanceledOnTouchOutside(boolean canceledOnTouchOutside) {
             MaterialDialog.this.mAlertDialog.setCanceledOnTouchOutside(canceledOnTouchOutside);
         }
-    }
-
-    public interface OnClickListener {
-        boolean onClick(View v, MaterialDialog materialDialog);
-    }
-
-    public interface OnViewInflateListener {
-        boolean onInflate(View v);
     }
 }

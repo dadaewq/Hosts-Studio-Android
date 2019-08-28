@@ -1,16 +1,15 @@
 package me.gitai.library.util;
 
+import android.os.Looper;
+
+import com.orm.dsl.BuildConfig;
+
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-
-import android.os.Looper;
-
-import com.orm.dsl.BuildConfig;
 
 /**
  * User: mcxiaoke
@@ -58,7 +57,7 @@ public final class ThreadUtils {
         }
 
         public void rejectedExecution(Runnable r, ThreadPoolExecutor e) {
-            L.d( r + "is discard.");
+            L.d(r + "is discard.");
         }
     }
 

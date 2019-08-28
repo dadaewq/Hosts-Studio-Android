@@ -27,12 +27,12 @@ public class WindowsViewFlipper extends ViewFlipper {
         super.addView(child, index);
     }
 
-    public HostsView getView(int i){
-        return (HostsView)getChildAt(i);
+    public HostsView getView(int i) {
+        return (HostsView) getChildAt(i);
     }
 
     @Override
     public HostsView getCurrentView() {
-        return (HostsView)super.getCurrentView();
+        return (HostsView) super.getCurrentView();
     }
 }

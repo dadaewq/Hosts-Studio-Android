@@ -1,8 +1,8 @@
 package me.gitai.library.util.jsevaluator.safebridge;
 
 import android.text.TextUtils;
-import android.webkit.WebView;
 import android.util.Log;
+import android.webkit.WebView;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -19,7 +19,7 @@ public class JsCallJava {
     private String mPreloadInterfaceJS;
     //private Gson mGson;
 
-    public JsCallJava (String injectedName, Class injectedCls) {
+    public JsCallJava(String injectedName, Class injectedCls) {
         try {
             if (TextUtils.isEmpty(injectedName)) {
                 throw new Exception("injected name can not be null");
@@ -50,12 +50,12 @@ public class JsCallJava {
             sb.append(mInjectedName);
             sb.append(" initialization end\")})(window);");
             mPreloadInterfaceJS = sb.toString();
-        } catch(Exception e){
+        } catch (Exception e) {
             Log.e(TAG, "init js error:" + e.getMessage());
         }
     }
 
-    private String genJavaMethodSign (Method method) {
+    private String genJavaMethodSign(Method method) {
         String sign = method.getName();
         Class[] argsTypes = method.getParameterTypes();
         int len = argsTypes.length;
@@ -68,9 +68,9 @@ public class JsCallJava {
             if (cls == String.class) {
                 sign += "_S";
             } else if (cls == int.class ||
-                cls == long.class ||
-                cls == float.class ||
-                cls == double.class) {
+                    cls == long.class ||
+                    cls == float.class ||
+                    cls == double.class) {
                 sign += "_N";
             } else if (cls == boolean.class) {
                 sign += "_B";
@@ -85,7 +85,7 @@ public class JsCallJava {
         return sign;
     }
 
-    public String getPreloadInterfaceJS () {
+    public String getPreloadInterfaceJS() {
         return mPreloadInterfaceJS;
     }
 
@@ -165,7 +165,7 @@ public class JsCallJava {
         }
     }
 
-    private String getReturn (String reqJson, int stateCode, Object result) {
+    private String getReturn(String reqJson, int stateCode, Object result) {
         String insertRes;
         if (result == null) {
             insertRes = "null";

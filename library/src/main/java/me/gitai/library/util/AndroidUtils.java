@@ -28,7 +28,6 @@ import android.os.StrictMode;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.Settings;
-import android.telecom.TelecomManager;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -37,7 +36,6 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -49,8 +47,6 @@ import java.util.Locale;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
-import me.gitai.library.util.io.StringBuilderWriter;
-
 /**
  * User: mcxiaoke
  * Date: 13-5-3
@@ -61,6 +57,9 @@ public final class AndroidUtils {
 
     public static final int HEAP_SIZE_LARGE = 48 * 1024 * 1024;
     private static final Pattern SAFE_FILENAME_PATTERN = Pattern.compile("[\\w%+,./=_-]+");
+    private static final Uri GSF_URI = Uri.parse("content://com.google.android.gservices");
+    private static final String GSF_ID_KEY = "android_id";
+    private static String UNKNOWN = "";
 
     private AndroidUtils() {
     }
@@ -76,7 +75,6 @@ public final class AndroidUtils {
         // characters, etc. are all unsafe by default.
         return SAFE_FILENAME_PATTERN.matcher(file.getPath()).matches();
     }
-
 
     public static File getCacheDir(Context context) {
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())) {
@@ -203,7 +201,6 @@ public final class AndroidUtils {
         return null;
     }
 
-
     /**
      * @param uri The Uri to check.
      * @return Whether the Uri authority is ExternalStorageProvider.
@@ -239,7 +236,6 @@ public final class AndroidUtils {
     public static boolean isLargeHeap() {
         return Runtime.getRuntime().maxMemory() > HEAP_SIZE_LARGE;
     }
-
 
     public static boolean noSdcard() {
         return !Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
@@ -286,6 +282,7 @@ public final class AndroidUtils {
             imm.toggleSoftInput(0, 0);
         }
     }
+
     /**
      * Execute an {@link AsyncTask} on a thread pool.
      *
@@ -390,11 +387,6 @@ public final class AndroidUtils {
         return Build.VERSION.SDK_INT >= VERSION_CODES.LOLLIPOP;
     }
 
-    @SuppressWarnings({"ResourceType", "unchecked"})
-    public <T> T getSystemService(final Context context, final String name) {
-        return (T) context.getSystemService(name);
-    }
-
     @TargetApi(11)
     public static void setStrictMode(boolean enable) {
         if (!enable) {
@@ -411,7 +403,6 @@ public final class AndroidUtils {
         StrictMode.setThreadPolicy(threadPolicyBuilder.build());
         StrictMode.setVmPolicy(vmPolicyBuilder.build());
     }
-
 
     /**
      * 重启一个Activity
@@ -456,7 +447,6 @@ public final class AndroidUtils {
                 + " batteryPct=" + batteryPct;
     }
 
-
     @SuppressLint("PackageManagerGetSignatures")
     private static Signature getPackageSignature(Context context) {
         final PackageManager pm = context.getPackageManager();
@@ -491,80 +481,75 @@ public final class AndroidUtils {
         return "";
     }
 
-    private static final Uri GSF_URI = Uri.parse("content://com.google.android.gservices");
+    public static String getGSFId(Context ctx) {
+        final String[] params = {GSF_ID_KEY};
+        final Cursor c = ctx.getContentResolver().query(GSF_URI, null, null, params, null);
 
-    private static final String GSF_ID_KEY = "android_id";
-
-
-    public static String getGSFId(Context ctx){
-        final String[] params = { GSF_ID_KEY };
-        final Cursor c = ctx.getContentResolver().query(GSF_URI,null,null,params,null);
-
-        try{
-            if (!c.moveToFirst() || c.getColumnCount() < 2){
+        try {
+            if (!c.moveToFirst() || c.getColumnCount() < 2) {
                 return null;
             }
             return Long.toHexString(Long.parseLong(c.getString(1)));
-        }catch (NumberFormatException e){
+        } catch (NumberFormatException e) {
             L.e(e);
-        }finally {
-            if (c!=null){
+        } finally {
+            if (c != null) {
                 c.close();
             }
         }
         return null;
     }
 
-    public static String getBuildSerialId(){
+    public static String getBuildSerialId() {
         String deviceId = null;
-        if (Build.VERSION.SDK_INT > VERSION_CODES.GINGERBREAD){
+        if (Build.VERSION.SDK_INT > VERSION_CODES.GINGERBREAD) {
             deviceId = Build.SERIAL;
         }
         return deviceId;
     }
 
-    public static String getAndroidId(Context ctx){
-        String androidId = Settings.Secure.getString(ctx.getContentResolver(),Settings.Secure.ANDROID_ID);
-        if (androidId == null || androidId.equalsIgnoreCase("android_id")||androidId.equalsIgnoreCase("9774d56d682e549c")){
+    public static String getAndroidId(Context ctx) {
+        String androidId = Settings.Secure.getString(ctx.getContentResolver(), Settings.Secure.ANDROID_ID);
+        if (androidId == null || androidId.equalsIgnoreCase("android_id") || androidId.equalsIgnoreCase("9774d56d682e549c")) {
             return null;
         }
         return androidId;
     }
 
-    public static String getIMEI(Context ctx){
+    public static String getIMEI(Context ctx) {
         String IMEI = null;
-        try{
-            final TelephonyManager tm = (TelephonyManager)ctx.getSystemService(Context.TELEPHONY_SERVICE);
+        try {
+            final TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
             IMEI = tm.getDeviceId();
-        }catch (Exception e){
+        } catch (Exception e) {
             L.e(e);
         }
         return IMEI;
     }
-    
-    public static String getDeviceId(Context ctx){
+
+    public static String getDeviceId(Context ctx) {
         String deviceId = null;
-        try{
-            final TelephonyManager tm = (TelephonyManager)ctx.getSystemService(Context.TELEPHONY_SERVICE);
+        try {
+            final TelephonyManager tm = (TelephonyManager) ctx.getSystemService(Context.TELEPHONY_SERVICE);
             String tmDevice = "" + tm.getDeviceId();
             String tmSerial = "" + tm.getSimSerialNumber();
             String androidId = "" + Settings.Secure.getString(ctx.getContentResolver(), Settings.Secure.ANDROID_ID);
 
-            UUID deviceUUID = new UUID(androidId.hashCode(),((long)tmDevice.hashCode() << 32)|tmSerial.hashCode());
+            UUID deviceUUID = new UUID(androidId.hashCode(), ((long) tmDevice.hashCode() << 32) | tmSerial.hashCode());
             deviceId = deviceUUID.toString();
-        }catch (Exception e){
+        } catch (Exception e) {
             L.e(e);
-            try{
+            try {
                 deviceId = getSerialDeviceId(ctx);
-            }catch (Exception e1){
+            } catch (Exception e1) {
                 L.e(e1);
-                throw new RuntimeException("FATAL!!! - This device doesn`t hava any Unique Serial Number",e1);
+                throw new RuntimeException("FATAL!!! - This device doesn`t hava any Unique Serial Number", e1);
             }
         }
         return deviceId;
     }
 
-    public static String getPid(){
+    public static String getPid() {
         StringBuilder pid = new StringBuilder(Build.MANUFACTURER)
                 .append(" ")
                 .append(Build.MODEL)
@@ -574,28 +559,28 @@ public final class AndroidUtils {
         return pid.toString();
     }
 
-    public static String getSerialDeviceId(Context ctx){
+    public static String getSerialDeviceId(Context ctx) {
         String deviceId = null;
-        if (Build.VERSION.SDK_INT > VERSION_CODES.GINGERBREAD){
+        if (Build.VERSION.SDK_INT > VERSION_CODES.GINGERBREAD) {
             deviceId = Build.SERIAL;
         }
-        if (deviceId == null || deviceId.equalsIgnoreCase("unknown")){
+        if (deviceId == null || deviceId.equalsIgnoreCase("unknown")) {
             deviceId = getAndroidId(ctx);
-            if (deviceId == null){
+            if (deviceId == null) {
                 throw new RuntimeException("FATAL!!! - This device doesn`t hava any Unique Serial Number");
             }
         }
         return deviceId;
     }
 
-    public static String getTagusSerialDeviceId(Context ctx){
+    public static String getTagusSerialDeviceId(Context ctx) {
         String deviceId = null;
-        try{
+        try {
             deviceId = getIMEI(ctx);
-            if (deviceId == null){
+            if (deviceId == null) {
                 deviceId = getSerialDeviceId(ctx);
             }
-        }catch (Exception ex){
+        } catch (Exception ex) {
             deviceId = getDeviceId(ctx);
             L.e(ex);
         }
@@ -636,67 +621,63 @@ public final class AndroidUtils {
         return text;
     }
 
-    private static String UNKNOWN = "";
-
-
     /**
      * The user-visible SDK version of the framework;
      * its possible values are defined in Build.VERSION_CODES.
+     *
      * @param sdk_int "SDK_INT"
      */
-    public static String getSDKIntStr(int sdk_int)
-    {
-        switch (sdk_int)
-        {
-            case Build.VERSION_CODES.BASE://1
+    public static String getSDKIntStr(int sdk_int) {
+        switch (sdk_int) {
+            case VERSION_CODES.BASE://1
                 return "BASE";//Android 1.0
-            case Build.VERSION_CODES.BASE_1_1://2
+            case VERSION_CODES.BASE_1_1://2
                 return "BASE_1_1";//Android 1.1
-            case Build.VERSION_CODES.CUPCAKE://3
+            case VERSION_CODES.CUPCAKE://3
                 return "CUPCAKE";//Android 1.5
-            case Build.VERSION_CODES.DONUT://4
+            case VERSION_CODES.DONUT://4
                 return "DONUT";//Android 1.6
-            case Build.VERSION_CODES.ECLAIR://5
+            case VERSION_CODES.ECLAIR://5
                 return "ECLAIR";//Android 2.0
-            case Build.VERSION_CODES.ECLAIR_0_1://6
+            case VERSION_CODES.ECLAIR_0_1://6
                 return "ECLAIR_0_1";//Android 2.0.1
-            case Build.VERSION_CODES.ECLAIR_MR1://7
+            case VERSION_CODES.ECLAIR_MR1://7
                 return "ECLAIR_MR1";//Android 2.1.x
-            case Build.VERSION_CODES.FROYO://8
+            case VERSION_CODES.FROYO://8
                 return "FROYO";//Android 2.2.x
-            case Build.VERSION_CODES.GINGERBREAD://9
+            case VERSION_CODES.GINGERBREAD://9
                 return "GINGERBREAD";//Android 2.3 Android 2.3.1 Android 2.3.2
-            case Build.VERSION_CODES.GINGERBREAD_MR1://10
+            case VERSION_CODES.GINGERBREAD_MR1://10
                 return "GINGERBREAD_MR1";//Android 2.3.3 Android 2.3.4
-            case Build.VERSION_CODES.HONEYCOMB://11
+            case VERSION_CODES.HONEYCOMB://11
                 return "HONEYCOMB";//Android 3.0.x
-            case Build.VERSION_CODES.HONEYCOMB_MR1://12
+            case VERSION_CODES.HONEYCOMB_MR1://12
                 return "HONEYCOMB_MR1";//Android 3.1.x
-            case Build.VERSION_CODES.HONEYCOMB_MR2://13
+            case VERSION_CODES.HONEYCOMB_MR2://13
                 return "HONEYCOMB_MR2";//Android 3.2
-            case Build.VERSION_CODES.ICE_CREAM_SANDWICH://14
+            case VERSION_CODES.ICE_CREAM_SANDWICH://14
                 return "ICE_CREAM_SANDWICH";//Android 4.0 Android 4.0.1 Android 4.0.2
-            case Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1://15
+            case VERSION_CODES.ICE_CREAM_SANDWICH_MR1://15
                 return "ICE_CREAM_SANDWICH_MR1";//Android 4.0.3 Android 4.0.4
-            case Build.VERSION_CODES.JELLY_BEAN://16
+            case VERSION_CODES.JELLY_BEAN://16
                 return "JELLY_BEAN";//Android 4.1 Android 4.1.1
-            case Build.VERSION_CODES.JELLY_BEAN_MR1://17
+            case VERSION_CODES.JELLY_BEAN_MR1://17
                 return "JELLY_BEAN_MR1";//Android 4.2 Android 4.2.2
-            case Build.VERSION_CODES.JELLY_BEAN_MR2://18
+            case VERSION_CODES.JELLY_BEAN_MR2://18
                 return "JELLY_BEAN_MR2";//Android 4.3
-            case Build.VERSION_CODES.KITKAT://19
+            case VERSION_CODES.KITKAT://19
                 return "KITKAT";//Android 4.4
-            case Build.VERSION_CODES.KITKAT_WATCH://20
+            case VERSION_CODES.KITKAT_WATCH://20
                 return "KITKAT_WATCH";//Android 4.4W
-            case Build.VERSION_CODES.LOLLIPOP://21
+            case VERSION_CODES.LOLLIPOP://21
                 return "LOLLIPOP";//Android 5.0
-            case Build.VERSION_CODES.LOLLIPOP_MR1://22
+            case VERSION_CODES.LOLLIPOP_MR1://22
                 return "LOLLIPOP_MR1";
-            case Build.VERSION_CODES.M://23
+            case VERSION_CODES.M://23
                 return "M";
             //Magic version number for a current development build,
             //which has not yet turned into an official release.
-            case Build.VERSION_CODES.CUR_DEVELOPMENT://1000
+            case VERSION_CODES.CUR_DEVELOPMENT://1000
                 return "CUR_DEVELOPMENT";
             default:
                 return UNKNOWN;
@@ -707,57 +688,55 @@ public final class AndroidUtils {
      * @param sdk_int "SDK_INT"
      * @return The date Google release the given Android version.
      */
-    public static String getSDKIntDateStr(int sdk_int)
-    {
-        switch (sdk_int)
-        {
-            case Build.VERSION_CODES.BASE://0
+    public static String getSDKIntDateStr(int sdk_int) {
+        switch (sdk_int) {
+            case VERSION_CODES.BASE://0
                 return "2008-10";//Android 1.0
-            case Build.VERSION_CODES.BASE_1_1://1
+            case VERSION_CODES.BASE_1_1://1
                 return "2009-02";//Android 1.1
-            case Build.VERSION_CODES.CUPCAKE://3
+            case VERSION_CODES.CUPCAKE://3
                 return "2009-05";//Android 1.5
-            case Build.VERSION_CODES.DONUT://4
+            case VERSION_CODES.DONUT://4
                 return "2009-09";//Android 1.6
-            case Build.VERSION_CODES.ECLAIR://5
+            case VERSION_CODES.ECLAIR://5
                 return "2009-11";//Android 2.0
-            case Build.VERSION_CODES.ECLAIR_0_1://6
+            case VERSION_CODES.ECLAIR_0_1://6
                 return "2009-12";//Android 2.0.1
-            case Build.VERSION_CODES.ECLAIR_MR1://7
+            case VERSION_CODES.ECLAIR_MR1://7
                 return "2010-01";//Android 2.1.x
-            case Build.VERSION_CODES.FROYO://8
+            case VERSION_CODES.FROYO://8
                 return "2010-06";//Android 2.2.x
-            case Build.VERSION_CODES.GINGERBREAD://9
+            case VERSION_CODES.GINGERBREAD://9
                 return "2010-11";//Android 2.3 Android 2.3.1 Android 2.3.2
-            case Build.VERSION_CODES.GINGERBREAD_MR1://10
+            case VERSION_CODES.GINGERBREAD_MR1://10
                 return "2011-02";//Android 2.3.3 Android 2.3.4
-            case Build.VERSION_CODES.HONEYCOMB://11
+            case VERSION_CODES.HONEYCOMB://11
                 return "2011-02";//Android 3.0.x
-            case Build.VERSION_CODES.HONEYCOMB_MR1://12
+            case VERSION_CODES.HONEYCOMB_MR1://12
                 return "2011-05";//Android 3.1.x
-            case Build.VERSION_CODES.HONEYCOMB_MR2://13
+            case VERSION_CODES.HONEYCOMB_MR2://13
                 return "2011-06";//Android 3.2
-            case Build.VERSION_CODES.ICE_CREAM_SANDWICH://14
+            case VERSION_CODES.ICE_CREAM_SANDWICH://14
                 return "2011-10";//Android 4.0 Android 4.0.1 Android 4.0.2
-            case Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1://15
+            case VERSION_CODES.ICE_CREAM_SANDWICH_MR1://15
                 return "2011-12";//Android 4.0.3 Android 4.0.4
-            case Build.VERSION_CODES.JELLY_BEAN://16
+            case VERSION_CODES.JELLY_BEAN://16
                 return "2012-06";//Android 4.1 Android 4.1.1
-            case Build.VERSION_CODES.JELLY_BEAN_MR1://17
+            case VERSION_CODES.JELLY_BEAN_MR1://17
                 return "2012-11";//Android 4.2 Android 4.2.2
-            case Build.VERSION_CODES.JELLY_BEAN_MR2://18
+            case VERSION_CODES.JELLY_BEAN_MR2://18
                 return "2013-07";//Android 4.3
-            case Build.VERSION_CODES.KITKAT://19
+            case VERSION_CODES.KITKAT://19
                 return "2013-10";//Android 4.4
-            case Build.VERSION_CODES.KITKAT_WATCH://20
+            case VERSION_CODES.KITKAT_WATCH://20
                 return UNKNOWN;//Android 4.4W
-            case Build.VERSION_CODES.LOLLIPOP://21
+            case VERSION_CODES.LOLLIPOP://21
                 return UNKNOWN;//Android 5.0
-            case Build.VERSION_CODES.LOLLIPOP_MR1://22
+            case VERSION_CODES.LOLLIPOP_MR1://22
                 return UNKNOWN;
-            case Build.VERSION_CODES.M://23
+            case VERSION_CODES.M://23
                 return UNKNOWN;
-            case Build.VERSION_CODES.CUR_DEVELOPMENT://1000
+            case VERSION_CODES.CUR_DEVELOPMENT://1000
                 return UNKNOWN;
             default:
                 return UNKNOWN;
@@ -766,12 +745,11 @@ public final class AndroidUtils {
 
     /**
      * The screen density expressed as dots-per-inch.
+     *
      * @param density_dpi "densityDpi"
      */
-    public static String getDensityDPIStr(int density_dpi)
-    {
-        switch (density_dpi)
-        {
+    public static String getDensityDPIStr(int density_dpi) {
+        switch (density_dpi) {
             case DisplayMetrics.DENSITY_LOW://120
                 return "DENSITY_LOW";
             case DisplayMetrics.DENSITY_MEDIUM://160
@@ -805,13 +783,12 @@ public final class AndroidUtils {
 
     /**
      * Overall orientation of the screen.
+     *
      * @param orientation "orientation"
      */
     @SuppressWarnings("deprecation")
-    public static String getOrientationStr(int orientation)
-    {
-        switch (orientation)
-        {
+    public static String getOrientationStr(int orientation) {
+        switch (orientation) {
             case Configuration.ORIENTATION_UNDEFINED://0
                 return "ORIENTATION_UNDEFINED";
             case Configuration.ORIENTATION_PORTRAIT://1
@@ -826,10 +803,8 @@ public final class AndroidUtils {
     }
 
     @SuppressWarnings("deprecation")
-    public static String getSensorTypeStr(int type)
-    {
-        switch (type)
-        {
+    public static String getSensorTypeStr(int type) {
+        switch (type) {
             case Sensor.TYPE_ALL://-1
                 return "TYPE_ALL";
             //Accelerometer sensor type
@@ -903,12 +878,11 @@ public final class AndroidUtils {
     /**
      * Returns the rotation of the screen from its "natural" orientation.
      * Notice: ANTICLOCKWISE
+     *
      * @param rotation "getRotation()"
      */
-    public static String getRotationStr(int rotation)
-    {
-        switch (rotation)
-        {
+    public static String getRotationStr(int rotation) {
+        switch (rotation) {
             //Natural orientation
             case Surface.ROTATION_0://0
                 return "ROTATION_0";
@@ -927,35 +901,30 @@ public final class AndroidUtils {
      * Returns the MCC+MNC (mobile country code + mobile network code) of the provider of the SIM.
      * 5 or 6 decimal digits.
      * Notice: Only SIM operators in China are supported currently.
+     *
      * @param sim_operator "getSimOperator()"
      */
-    public static String getSimOperator(String sim_operator)
-    {
-        if (sim_operator == null || sim_operator.length() < 5)
-        {
+    public static String getSimOperator(String sim_operator) {
+        if (sim_operator == null || sim_operator.length() < 5) {
             return UNKNOWN;
         }
 
         int mcc = Integer.parseInt(sim_operator.substring(0, 3));
         int mnc = Integer.parseInt(sim_operator.substring(3));
 
-        switch (mcc)
-        {
+        switch (mcc) {
             case 454:
-                switch (mcc)
-                {
+                switch (mcc) {
                     default:
                         return "Hong Kong";
                 }
             case 455:
-                switch (mcc)
-                {
+                switch (mcc) {
                     default:
                         return "Macao";
                 }
             case 460:
-                switch (mnc)
-                {
+                switch (mnc) {
                     case 0:
                     case 2:
                     case 7:
@@ -975,8 +944,7 @@ public final class AndroidUtils {
                         return UNKNOWN;
                 }
             case 466:
-                switch (mcc)
-                {
+                switch (mcc) {
                     default:
                         return "Taiwan";
                 }
@@ -987,17 +955,15 @@ public final class AndroidUtils {
 
     /**
      * Returns the current state of the storage device that provides the given path.
+     *
      * @param state "getExternalStorageState()"
      */
-    public static String getExternalStorageState(String state)
-    {
-        if (TextUtils.isEmpty(state))
-        {
+    public static String getExternalStorageState(String state) {
+        if (TextUtils.isEmpty(state)) {
             return UNKNOWN;
         }
 
-        switch (state)
-        {
+        switch (state) {
             case Environment.MEDIA_BAD_REMOVAL://bad_removal
                 return "MEDIA_BAD_REMOVAL";
             case Environment.MEDIA_CHECKING://checking
@@ -1028,12 +994,11 @@ public final class AndroidUtils {
     /**
      * Returns a constant indicating the device phone type.
      * This indicates the type of radio used to transmit voice calls.
+     *
      * @param phone_type "getPhoneType()"
      */
-    public static String getPhoneTypeStr(int phone_type)
-    {
-        switch (phone_type)
-        {
+    public static String getPhoneTypeStr(int phone_type) {
+        switch (phone_type) {
             case TelephonyManager.PHONE_TYPE_NONE://0
                 return "PHONE_TYPE_NONE";
             case TelephonyManager.PHONE_TYPE_GSM://1
@@ -1049,18 +1014,15 @@ public final class AndroidUtils {
 
     /**
      * @param phone_type "getPhoneType()"
-     * @param id_length Length of device id string.
+     * @param id_length  Length of device id string.
      * @return The date Google release the given Android version.
      */
-    public static String getDeviceIdType(int phone_type, int id_length)
-    {
-        switch (phone_type)
-        {
+    public static String getDeviceIdType(int phone_type, int id_length) {
+        switch (phone_type) {
             case TelephonyManager.PHONE_TYPE_GSM://1
                 return "IMEI";
             case TelephonyManager.PHONE_TYPE_CDMA://2
-                if (id_length == 8)
-                {
+                if (id_length == 8) {
                     return "ESN";
                 }
                 return "MEID";
@@ -1071,12 +1033,11 @@ public final class AndroidUtils {
 
     /**
      * Returns a constant indicating the state of the default SIM card.
+     *
      * @param sim_state "getSimState()"
      */
-    public static String getSimStateStr(int sim_state)
-    {
-        switch (sim_state)
-        {
+    public static String getSimStateStr(int sim_state) {
+        switch (sim_state) {
             case TelephonyManager.SIM_STATE_UNKNOWN://0
                 return "SIM_STATE_UNKNOWN";
             case TelephonyManager.SIM_STATE_ABSENT://1
@@ -1096,80 +1057,63 @@ public final class AndroidUtils {
 
     /**
      * Current user preference for the locale, corresponding to locale resource qualifier.
+     *
      * @param locale "locale"
      */
     @TargetApi(9)
-    public static String getLocale(Locale locale)
-    {
+    public static String getLocale(Locale locale) {
         if (Build.VERSION.SDK_INT >= 9 && locale.equals(Locale.ROOT))//null
         {
             return "ROOT";
-        }
-        else if (locale.equals(Locale.GERMAN))//de
+        } else if (locale.equals(Locale.GERMAN))//de
         {
             return "GERMAN";
-        }
-        else if (locale.equals(Locale.GERMANY))//de_DE
+        } else if (locale.equals(Locale.GERMANY))//de_DE
         {
             return "GERMANY";
-        }
-        else if (locale.equals(Locale.ENGLISH))//en
+        } else if (locale.equals(Locale.ENGLISH))//en
         {
             return "ENGLISH";
-        }
-        else if (locale.equals(Locale.CANADA))//en_CA
+        } else if (locale.equals(Locale.CANADA))//en_CA
         {
             return "CANADA";
-        }
-        else if (locale.equals(Locale.UK))//en_GB
+        } else if (locale.equals(Locale.UK))//en_GB
         {
             return "UK";
-        }
-        else if (locale.equals(Locale.US))//en_US
+        } else if (locale.equals(Locale.US))//en_US
         {
             return "US";
-        }
-        else if (locale.equals(Locale.FRENCH))//fr
+        } else if (locale.equals(Locale.FRENCH))//fr
         {
             return "FRENCH";
-        }
-        else if (locale.equals(Locale.CANADA_FRENCH))//fr_CA
+        } else if (locale.equals(Locale.CANADA_FRENCH))//fr_CA
         {
             return "CANADA_FRENCH";
-        }
-        else if (locale.equals(Locale.FRANCE))//fr_FR
+        } else if (locale.equals(Locale.FRANCE))//fr_FR
         {
             return "FRANCE";
-        }
-        else if (locale.equals(Locale.ITALIAN))//it
+        } else if (locale.equals(Locale.ITALIAN))//it
         {
             return "ITALIAN";
-        }
-        else if (locale.equals(Locale.ITALY))//it_IT
+        } else if (locale.equals(Locale.ITALY))//it_IT
         {
             return "ITALY";
-        }
-        else if (locale.equals(Locale.JAPANESE))//ja
+        } else if (locale.equals(Locale.JAPANESE))//ja
         {
             return "JAPANESE";
-        }
-        else if (locale.equals(Locale.JAPAN))//ja_JP
+        } else if (locale.equals(Locale.JAPAN))//ja_JP
         {
             return "JAPAN";
-        }
-        else if (locale.equals(Locale.KOREAN))//ko
+        } else if (locale.equals(Locale.KOREAN))//ko
         {
             return "KOREAN";
-        }
-        else if (locale.equals(Locale.KOREA))//ko_KR
+        } else if (locale.equals(Locale.KOREA))//ko_KR
         {
             return "KOREA";
-        }
-        else if (locale.equals(Locale.CHINESE))//zh
+        } else if (locale.equals(Locale.CHINESE))//zh
         {
             return "CHINESE";
-        }
-        else if (locale.equals(Locale.SIMPLIFIED_CHINESE))//zh_CN
+        } else if (locale.equals(Locale.SIMPLIFIED_CHINESE))//zh_CN
         {
             return "SIMPLIFIED_CHINESE/CHINA/PRC";
         }
@@ -1195,18 +1139,16 @@ public final class AndroidUtils {
     /**
      * A single feature that can be requested by an application.
      * This corresponds to information collected from the AndroidManifest.xml's tag.
+     *
      * @param feature "FeatureInfo"
      */
     @SuppressWarnings("deprecation")
-    public static String getFeature(String feature)
-    {
-        if (TextUtils.isEmpty(feature))
-        {
+    public static String getFeature(String feature) {
+        if (TextUtils.isEmpty(feature)) {
             return UNKNOWN;
         }
 
-        switch (feature)
-        {
+        switch (feature) {
             case PackageManager.FEATURE_APP_WIDGETS://android.software.app_widgets
                 return "FEATURE_APP_WIDGETS";
             case PackageManager.FEATURE_AUDIO_LOW_LATENCY://android.hardware.audio.low_latency
@@ -1361,18 +1303,16 @@ public final class AndroidUtils {
     }
 
     /**
-     * @param width Physical width of screen
+     * @param width  Physical width of screen
      * @param height Physical height of screen
      * @return The resolution format, like QVGA.
      */
-    public static String getResolutionFormat(int width, int height)
-    {
+    public static String getResolutionFormat(int width, int height) {
         //Total pixels
         int pixels = width * height;
         //Pixels of the short side
         int min = width <= height ? width : height;
-        switch (pixels)
-        {
+        switch (pixels) {
             /*
              * Video Graphics Array
              */
@@ -1454,12 +1394,11 @@ public final class AndroidUtils {
 
     /**
      * Constant for screenLayout: bits that encode the size.
+     *
      * @param sl_size_mask "screenLayout & SCREENLAYOUT_SIZE_MASK"
      */
-    public static String getSLSizeMaskStr(int sl_size_mask)
-    {
-        switch (sl_size_mask)
-        {
+    public static String getSLSizeMaskStr(int sl_size_mask) {
+        switch (sl_size_mask) {
             case Configuration.SCREENLAYOUT_SIZE_UNDEFINED://0
                 return "SCREENLAYOUT_SIZE_UNDEFINED";
             case Configuration.SCREENLAYOUT_SIZE_SMALL://1
@@ -1477,13 +1416,12 @@ public final class AndroidUtils {
 
     /**
      * Constant for screenLayout: bits that encode the size.
+     *
      * @param sl_size_mask "screenLayout & SCREENLAYOUT_SIZE_MASK"
      * @return Device type by screen size, "Handset" or "Tablet".
      */
-    public static String getDeviceTypeStr(int sl_size_mask)
-    {
-        switch (sl_size_mask)
-        {
+    public static String getDeviceTypeStr(int sl_size_mask) {
+        switch (sl_size_mask) {
             case Configuration.SCREENLAYOUT_SIZE_SMALL://1
             case Configuration.SCREENLAYOUT_SIZE_NORMAL://2
                 return "Handset";
@@ -1498,13 +1436,12 @@ public final class AndroidUtils {
     /**
      * The GLES version used by an application.
      * The upper order 16 bits represent the major version and the lower order 16 bits the minor version.
+     *
      * @param gles_version "reqGlEsVersion"
      * @return Readable version of OpenGL ES, like 0x00030000 - 3.0
      */
-    public static String getGlEsVersion(int gles_version)
-    {
-        switch (gles_version)
-        {
+    public static String getGlEsVersion(int gles_version) {
+        switch (gles_version) {
             case ConfigurationInfo.GL_ES_VERSION_UNDEFINED://0
                 return "GL_ES_VERSION_UNDEFINED";
             default:
@@ -1514,12 +1451,11 @@ public final class AndroidUtils {
 
     /**
      * The NETWORK_TYPE_xxxx for current data connection.
+     *
      * @param network_type "getNetworkType()"
      */
-    public static String getNetworkTypeStr(int network_type)
-    {
-        switch (network_type)
-        {
+    public static String getNetworkTypeStr(int network_type) {
+        switch (network_type) {
             case TelephonyManager.NETWORK_TYPE_UNKNOWN://0
                 return "NETWORK_TYPE_UNKNOWN";
             //GPRS (2.5G)
@@ -1583,30 +1519,23 @@ public final class AndroidUtils {
     /**
      * @return An explicit MIME data type.
      */
-    public static String getMIMEType(String file_name)
-    {
-        if (file_name.endsWith(".txt"))
-        {
+    public static String getMIMEType(String file_name) {
+        if (file_name.endsWith(".txt")) {
             return "text/plain";
-        }
-        else if (file_name.endsWith(".apk"))
-        {
+        } else if (file_name.endsWith(".apk")) {
             return "application/vnd.android.package-archive";
-        }
-        else
-        {
+        } else {
             return "*/*";
         }
     }
 
     /**
      * The current width of the available screen space, in dp units.
+     *
      * @param screen_width_dp "screenWidthDp"
      */
-    public static String getScreenWidthDpStr(int screen_width_dp)
-    {
-        switch (screen_width_dp)
-        {
+    public static String getScreenWidthDpStr(int screen_width_dp) {
+        switch (screen_width_dp) {
             case Configuration.SCREEN_WIDTH_DP_UNDEFINED://0
                 return "SCREEN_WIDTH_DP_UNDEFINED";
             default:
@@ -1616,12 +1545,11 @@ public final class AndroidUtils {
 
     /**
      * The current height of the available screen space, in dp units.
+     *
      * @param screen_height_dp "screenHeightDp"
      */
-    public static String getScreenHeightDpStr(int screen_height_dp)
-    {
-        switch (screen_height_dp)
-        {
+    public static String getScreenHeightDpStr(int screen_height_dp) {
+        switch (screen_height_dp) {
             case Configuration.SCREEN_HEIGHT_DP_UNDEFINED://0
                 return "SCREEN_HEIGHT_DP_UNDEFINED";
             default:
@@ -1632,15 +1560,19 @@ public final class AndroidUtils {
     /**
      * You can verify which runtime is in use by calling System.getProperty("java.vm.version").
      * If ART is in use, the property's value is "2.0.0" or higher.
+     *
      * @param java_vm_version "getProperty("java.vm.version")"
      */
-    public static String getVMType(String java_vm_version)
-    {
-        if (java_vm_version.startsWith("2."))
-        {
+    public static String getVMType(String java_vm_version) {
+        if (java_vm_version.startsWith("2.")) {
             return "ART";
         }
         return "Dalvik";
+    }
+
+    @SuppressWarnings({"ResourceType", "unchecked"})
+    public <T> T getSystemService(final Context context, final String name) {
+        return (T) context.getSystemService(name);
     }
 
 }

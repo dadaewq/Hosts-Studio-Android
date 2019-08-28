@@ -10,16 +10,17 @@ import android.preference.PreferenceManager;
 public class SharedPreferencesUtil {
     private static Context ctx;
 
-    public static void initialize(Context context){
+    public static void initialize(Context context) {
         ctx = context;
     }
 
-    public synchronized static SharedPreferences getInstence(String name){
-        if (name !=null)
+    public synchronized static SharedPreferences getInstence(String name) {
+        if (name != null)
             return ctx.getSharedPreferences(name, 0);
         return PreferenceManager.getDefaultSharedPreferences(ctx);
     }
-    public synchronized static SharedPreferences.Editor getEditor(String name){
+
+    public synchronized static SharedPreferences.Editor getEditor(String name) {
         return ctx.getSharedPreferences(name, 0).edit();
     }
 

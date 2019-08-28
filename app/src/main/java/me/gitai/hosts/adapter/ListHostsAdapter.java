@@ -5,7 +5,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
-import android.widget.Filterable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -15,7 +14,6 @@ import me.gitai.hosts.entities.Host;
 import me.gitai.hosts.widget.CheckableHostItem;
 import me.gitai.library.util.L;
 import me.gitai.library.util.StringUtils;
-import me.gitai.library.util.ThreadUtils;
 import me.gitai.library.util.ViewUtils;
 
 public class ListHostsAdapter extends BaseAdapter {
@@ -27,8 +25,9 @@ public class ListHostsAdapter extends BaseAdapter {
 
     private int mIpMinWidth;
     private int mIpMaxWidth;
+    private boolean mRegex;
 
-    public ListHostsAdapter(Context appContext){
+    public ListHostsAdapter(Context appContext) {
         mAppContext = appContext;
     }
 
@@ -105,14 +104,12 @@ public class ListHostsAdapter extends BaseAdapter {
         return view;
     }
 
-	public Filter getFilter(boolean regex) {
+    public Filter getFilter(boolean regex) {
         mRegex = regex;
-		return mFilter;
-	}
+        return mFilter;
+    }
 
-    private boolean mRegex;
-
-    public class HostsFilter extends Filter{
+    public class HostsFilter extends Filter {
 
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
@@ -121,20 +118,20 @@ public class ListHostsAdapter extends BaseAdapter {
             final List<Host> list = originalHosts;
             List<Host> nlist = new ArrayList<>();
 
-            if (!StringUtils.hasText(filterString)){
+            if (!StringUtils.hasText(filterString)) {
                 nlist = list;
-            }else{
-                if (mRegex){
+            } else {
+                if (mRegex) {
                     for (int i = 0; i < list.size(); i++) {
                         Host host = list.get(i);
-                        if (host.matcher(filterString)){
+                        if (host.matcher(filterString)) {
                             nlist.add(host);
                         }
                     }
-                }else{
+                } else {
                     for (int i = 0; i < list.size(); i++) {
                         Host host = list.get(i);
-                        if (host.contains(filterString)){
+                        if (host.contains(filterString)) {
                             nlist.add(host);
                         }
                     }
@@ -147,7 +144,7 @@ public class ListHostsAdapter extends BaseAdapter {
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            filteredHosts = (List<Host>)results.values;
+            filteredHosts = (List<Host>) results.values;
             notifyDataSetChanged();
         }
     }

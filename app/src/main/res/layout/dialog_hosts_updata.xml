@@ -1,40 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:weightSum="1">
 
     <TextView
+        android:id="@android:id/message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:visibility="gone"
-        android:id="@android:id/message" />
+        android:visibility="gone" />
 
     <EditText
+        android:id="@+id/et_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/et_title"
         android:hint="@string/dialog_upload_title" />
 
     <EditText
+        android:id="@+id/et_hosts"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/et_hosts"/>
+        android:layout_height="wrap_content" />
 
     <CheckBox
+        android:id="@+id/cb_private"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/dialog_upload_private"
-        android:id="@+id/cb_private"
-        android:checked="false" />
+        android:checked="false"
+        android:text="@string/dialog_upload_private" />
 
     <EditText
+        android:id="@+id/et_description"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="textMultiLine"
-        android:id="@+id/et_description"
         android:hint="@string/dialog_upload_des"
+        android:inputType="textMultiLine"
         android:linksClickable="false"
         android:minLines="5" />
 </LinearLayout>

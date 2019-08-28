@@ -37,11 +37,11 @@ public class CheckableHostItem extends RelativeLayout implements Checkable {
     private void initLayout(Context context) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.checkable_host_item, this, true);
-        
-        mIp = (TextView)view.findViewById(R.id.hostItemIp);
-        mHostname = (TextView)view.findViewById(R.id.hostItemHostname);
-        mComment = (TextView)view.findViewById(R.id.hostItemComment);
-        mCheckbox = (InertCheckBox)view.findViewById(R.id.hostItemCheckbox);
+
+        mIp = (TextView) view.findViewById(R.id.hostItemIp);
+        mHostname = (TextView) view.findViewById(R.id.hostItemHostname);
+        mComment = (TextView) view.findViewById(R.id.hostItemComment);
+        mCheckbox = (InertCheckBox) view.findViewById(R.id.hostItemCheckbox);
 
         Resources res = context.getResources();
         mTextColor = res.getColor(R.color.primary_text);
@@ -62,7 +62,7 @@ public class CheckableHostItem extends RelativeLayout implements Checkable {
         mIp.setText(ip);
         mIp.setTextColor(textColor);
         //mIp.setMinimumWidth(ipMinWidth);
-       // mIp.setMaxWidth(ipMaxWidth);
+        // mIp.setMaxWidth(ipMaxWidth);
         mHostname.setText(host.getHostName());
         mHostname.setTextColor(textColor);
         mCheckbox.setChecked(false);

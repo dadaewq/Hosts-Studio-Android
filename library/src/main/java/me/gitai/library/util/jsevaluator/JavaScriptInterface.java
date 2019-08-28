@@ -9,14 +9,14 @@ import me.gitai.library.util.jsevaluator.interfaces.CallJavaResultInterface;
  * Java code
  */
 public class JavaScriptInterface {
-	private final CallJavaResultInterface mCallJavaResultInterface;
+    private final CallJavaResultInterface mCallJavaResultInterface;
 
-	public JavaScriptInterface(CallJavaResultInterface callJavaResult) {
-		mCallJavaResultInterface = callJavaResult;
-	}
+    public JavaScriptInterface(CallJavaResultInterface callJavaResult) {
+        mCallJavaResultInterface = callJavaResult;
+    }
 
-	@JavascriptInterface
-	public void returnResultToJava(String value, int callIndex) {
-		mCallJavaResultInterface.jsCallFinished(value, callIndex);
-	}
+    @JavascriptInterface
+    public void returnResultToJava(String value, int callIndex) {
+        mCallJavaResultInterface.jsCallFinished(value, callIndex);
+    }
 }

@@ -48,7 +48,7 @@
     <string name="btn_updata">Updata</string>
     <string name="btn_new">New</string>
     <string name="btn_add">Add</string>
-    
+
     <string name="list_empty">No \'hosts\' records found.</string>
     <string name="list_empty_desc">We couldn\'t find any host entry.\nFeel free to add some!</string>
 

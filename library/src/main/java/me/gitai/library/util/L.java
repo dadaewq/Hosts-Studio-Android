@@ -1,5 +1,10 @@
-
 package me.gitai.library.util;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.os.Environment;
+import android.text.TextUtils;
+import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -9,15 +14,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Environment;
-import android.text.TextUtils;
-import android.util.Log;
 
 /**
  * Log增强工具
@@ -32,21 +30,32 @@ import android.util.Log;
  * 性能方面,耗时是{@link Log}的20倍
  * <p>
  * 使用示例:
- * 
+ *
  * <pre>
  * L.i(&quot;闪电狗&quot;);
- * 
+ *
  * LogCat输出:
  * 09-06 16:21:24.262: I/TestLogActivity$2.onClick(3212): 闪电狗
  * 09-06 16:21:24.262: I/TestLogActivity$2.onClick(3212):  at me.fantouch.demo.TestLogActivity$2.onClick(TestLogActivity.java:48)
  * </pre>
  * <p>
- * 
+ *
  * @author Fantouch
  */
 @SuppressLint("SimpleDateFormat")
 public class L {
     private static final String TAG = L.class.getSimpleName();
+    private static final String LOG_FILE_EXTENSION = ".log";
+    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    private static final SimpleDateFormat DATE_TIME_FORMAT =
+            new SimpleDateFormat("[yyyy-MM-dd hh:mm:ss] ");
+    private static final String DATE_TIME_PLACEHOLDER = "                      ";
+    private static boolean isToLogcat = false;
+    private static boolean isToFile = false;
+    /**
+     * log文件路径
+     */
+    private static String filePath = "";
 
     private L() {/* 禁止实例化 */
     }
@@ -127,31 +136,13 @@ public class L {
         log(Log.ERROR, null, throwable);
     }
 
-    public static void e(Throwable throwable,String msg) {
+    public static void e(Throwable throwable, String msg) {
         log(Log.ERROR, msg, throwable);
     }
 
     public static void e(String msg, Throwable throwable) {
         log(Log.ERROR, msg, throwable);
     }
-
-    private static final String LOG_FILE_EXTENSION = ".log";
-
-    private static boolean isToLogcat = false;
-
-    private static boolean isToFile = false;
-
-    /**
-     * log文件路径
-     */
-    private static String filePath = "";
-
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-
-    private static final SimpleDateFormat DATE_TIME_FORMAT =
-            new SimpleDateFormat("[yyyy-MM-dd hh:mm:ss] ");
-
-    private static final String DATE_TIME_PLACEHOLDER = "                      ";
 
     private static void log(int logLevel, String msg, Throwable throwable) {
 
@@ -216,7 +207,9 @@ public class L {
 
     }
 
-    /** @return 格式类似于: TestLogActivity.onClick */
+    /**
+     * @return 格式类似于: TestLogActivity.onClick
+     */
     private static String getTag(StackTraceElement stackTraceElement) {
         return stackTraceElement.getClassName().substring(
                 stackTraceElement.getClassName().lastIndexOf(".") + 1) + "."
@@ -225,7 +218,7 @@ public class L {
 
     /**
      * @return 格式类似于: at me.fantouch.demo.TestLogActivity$2.onClick(TestLogActivity.java:47) <br>
-     *         这样的格式可以实现eclipse双击转跳到源码相应位置
+     * 这样的格式可以实现eclipse双击转跳到源码相应位置
      */
     private static String getCodeLocation(StackTraceElement stackTraceElement) {
         return "at "
@@ -242,7 +235,7 @@ public class L {
 
     /**
      * 设置是否把日志输出到Logcat,建议在Application里面设置
-     * 
+     *
      * @param enable 缺省false
      */
     public static void setLogcatEnable(Context ctx, boolean enable) {
@@ -271,7 +264,7 @@ public class L {
 
     /**
      * 设置是否保存日志到文件,文件所在目录示例/data/data/packageName/file/xx.log
-     * 
+     *
      * @param enable 缺省false
      */
     public static void setLogToFileEnable(boolean enable, Context ctx) {
@@ -280,7 +273,7 @@ public class L {
 
     /**
      * 设置是否保存日志到文件,并指定文件路径
-     * 
+     *
      * @param enable 缺省false
      */
     public static void setLogToFileEnable(boolean enable, Context ctx, String path) {
@@ -314,10 +307,10 @@ public class L {
      * 根据配置文件,决定是否输出Logcat 和 Log文件
      * <p>
      * 配置文件示例如下:<br>
-     * 
+     *
      * <pre>
      * 路径: /sdcard/log.cfg
-     * 
+     *
      * logcat=true
      * file=true
      * </pre>
@@ -325,23 +318,23 @@ public class L {
     public static void cfgFromFile(Context ctx) {
         cfgFromFile(ctx, null);
     }
-    
+
     /**
      * 根据配置文件,并验证密码,决定是否输出Logcat,是否输出Log文件
      * <p>
      * 配置文件示例如下:<br>
-     * 
+     *
      * <pre>
      * 路径: /sdcard/log.cfg
-     * 
+     *
      * password=123456
      * logcat=true
      * file=true
      * saveLogFileToSD=true
      * </pre>
-     * 
+     *
      * @param password 密码,如果配置文件的与此不一致,则认为文件无效并忽略<br>
-     *            如果null,则跳过密码校验
+     *                 如果null,则跳过密码校验
      */
     public static void cfgFromFile(Context ctx, String password) {
         File cfgFile = null;

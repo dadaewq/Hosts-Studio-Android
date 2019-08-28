@@ -46,7 +46,7 @@
     <string name="btn_updata">升级</string>
     <string name="btn_new">新建</string>
     <string name="btn_add">追加</string>
-    
+
     <string name="list_empty">未找到 \'hosts\' 记录.</string>
     <string name="list_empty_desc">未找到任何host记录，你可以添加一些.</string>
 

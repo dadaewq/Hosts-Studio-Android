@@ -11,7 +11,7 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:text="@string/view_empty"
-        android:textSize="24sp"/>
+        android:textSize="24sp" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -19,6 +19,6 @@
         android:layout_gravity="center"
         android:gravity="center"
         android:text="@string/view_empty_desc"
-        android:textSize="12sp"/>
+        android:textSize="12sp" />
 
 </LinearLayout>

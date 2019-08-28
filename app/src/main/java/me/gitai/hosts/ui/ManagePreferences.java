@@ -1,7 +1,5 @@
 package me.gitai.hosts.ui;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -29,11 +27,10 @@ import me.gitai.library.widget.MaterialDialog;
  * Created by dp on 15-8-22.
  */
 public class ManagePreferences extends BasePreferenceActivity {
-    private Preference clear_caches,project_private,project_diy;
+    public static final int RESULT_CODE = 1;
+    private Preference clear_caches, project_private, project_diy;
     private Preference reset_settings;
     private AccessView accessView;
-
-    public static final int RESULT_CODE = 1;
 
     @Override
     protected void onResume() {
@@ -101,7 +98,7 @@ public class ManagePreferences extends BasePreferenceActivity {
             @Override
             public boolean onPreferenceClick(Preference preference) {
                 Intent i = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                i.setData(Uri.fromParts("package", BuildConfig.APPLICATION_ID,null));
+                i.setData(Uri.fromParts("package", BuildConfig.APPLICATION_ID, null));
                 startActivity(i);
                 return false;
             }
@@ -110,11 +107,11 @@ public class ManagePreferences extends BasePreferenceActivity {
         clear_caches.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
             @Override
             public boolean onPreferenceClick(Preference preference) {
-                try{
+                try {
                     File cache = AndroidUtils.getCacheDir(ManagePreferences.this);
-                    ToastUtil.show(FileUtils.sizeOfDirectory(cache)+"kb");
+                    ToastUtil.show(FileUtils.sizeOfDirectory(cache) + "kb");
                     FileUtils.deleteDirectory(cache);
-                }catch (Exception e){
+                } catch (Exception e) {
                     ToastUtil.show(e.getLocalizedMessage());
                 }
                 return false;
@@ -126,7 +123,7 @@ public class ManagePreferences extends BasePreferenceActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             case android.R.id.home:
                 finish();
                 break;

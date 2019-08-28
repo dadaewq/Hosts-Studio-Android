@@ -28,7 +28,7 @@ public class LicensePreference extends Preference implements Preference.OnPrefer
         init(context);
     }
 
-    private void init(Context context){
+    private void init(Context context) {
         licenseDialog = new MaterialDialog(context)
                 .setTitle(context.getString(R.string.dialog_licenses_title))
                 .setMessage("sugar\numeng.analytics\nsystembartint\nxUtils\nRootTools\ncommons-io")

@@ -1,26 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:weightSum="1">
 
     <TextView
+        android:id="@android:id/message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:visibility="gone"
-        android:id="@android:id/message" />
+        android:visibility="gone" />
 
     <EditText
+        android:id="@+id/et_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="@string/dialog_login_username"
-        android:id="@+id/et_username" />
+        android:hint="@string/dialog_login_username" />
+
     <EditText
+        android:id="@+id/et_password"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/dialog_login_password"
-        android:id="@+id/et_password"
         android:inputType="textPassword" />
 
 </LinearLayout>

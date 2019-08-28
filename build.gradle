@@ -1,46 +1,27 @@
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
     repositories {
+        google()
         jcenter()
+
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:1.5.+'
-        classpath 'pl.itako:icon-version:1.1.2'
+        classpath 'com.android.tools.build:gradle:3.5.0'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
     }
 }
 
 allprojects {
     repositories {
+        google()
         jcenter()
-        mavenCentral()
+
     }
 }
 
-
-subprojects {
-    ext {
-        config = [
-                appname : "Hosts Studio",
-                applicationId : "dphdjy.hostseditor",
-
-                compileSdkVersion : 23,
-                buildToolsVersion : "23.0.1",
-                minSdkVersion : 15,
-                targetSdkVersion : 23,
-
-                releaseSigning : [
-                        storeFile : System.getenv("KEYSTORE"),
-                        storePassword : System.getenv("KEYSTORE_PASSWORD"),
-                        alias : System.getenv("KEY_ALIAS"),
-                        aliasPassword: System.getenv("KEY_PASSWORD")
-                ],
-
-                versionCode : 36,
-                versionName : "0.2.5.1"
-        ]
-
-        versions = [
-            androidSupport : "23.1.1"
-        ]
-    }
+task clean(type: Delete) {
+    delete rootProject.buildDir
 }

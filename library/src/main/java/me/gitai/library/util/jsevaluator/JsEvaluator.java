@@ -1,8 +1,8 @@
 package me.gitai.library.util.jsevaluator;
 
-import java.util.ArrayList;
-
 import android.content.Context;
+
+import java.util.ArrayList;
 
 import me.gitai.library.util.jsevaluator.interfaces.CallJavaResultInterface;
 import me.gitai.library.util.jsevaluator.interfaces.HandlerWrapperInterface;
@@ -11,115 +11,111 @@ import me.gitai.library.util.jsevaluator.interfaces.JsEvaluatorInterface;
 import me.gitai.library.util.jsevaluator.interfaces.WebViewWrapperInterface;
 
 public class JsEvaluator implements CallJavaResultInterface, JsEvaluatorInterface {
-	public final static String JS_NAMESPACE = "evgeniiJsEvaluator";
+    public final static String JS_NAMESPACE = "evgeniiJsEvaluator";
+    private final Context mContext;
+    private final ArrayList<JsCallback> mResultCallbacks = new ArrayList<JsCallback>();
+    protected WebViewWrapperInterface mWebViewWrapper;
+    private HandlerWrapperInterface mHandler;
 
-	public static String escapeCarriageReturn(String str) {
-		return str.replace("\r", "\\r");
-	}
+    public JsEvaluator(Context context) {
+        mContext = context;
+        mHandler = new HandlerWrapper();
+    }
 
-	public static String escapeClosingScript(String str) {
-		return str.replace("</", "<\\/");
-	}
+    public static String escapeCarriageReturn(String str) {
+        return str.replace("\r", "\\r");
+    }
 
-	public static String escapeNewLines(String str) {
-		return str.replace("\n", "\\n");
-	}
+    public static String escapeClosingScript(String str) {
+        return str.replace("</", "<\\/");
+    }
 
-	public static String escapeSingleQuotes(String str) {
-		return str.replace("'", "\\'");
-	}
+    public static String escapeNewLines(String str) {
+        return str.replace("\n", "\\n");
+    }
 
-	public static String escapeSlash(String str) {
-		return str.replace("\\", "\\\\");
-	}
+    public static String escapeSingleQuotes(String str) {
+        return str.replace("'", "\\'");
+    }
 
-	public static String getJsForEval(String jsCode, int callbackIndex) {
-		jsCode = escapeSlash(jsCode);
-		jsCode = escapeSingleQuotes(jsCode);
-		jsCode = escapeClosingScript(jsCode);
-		jsCode = escapeNewLines(jsCode);
-		jsCode = escapeCarriageReturn(jsCode);
+    public static String escapeSlash(String str) {
+        return str.replace("\\", "\\\\");
+    }
 
-		return String.format("%s.returnResultToJava(eval('%s'), %s);", JS_NAMESPACE, jsCode,
-				callbackIndex);
-	}
+    public static String getJsForEval(String jsCode, int callbackIndex) {
+        jsCode = escapeSlash(jsCode);
+        jsCode = escapeSingleQuotes(jsCode);
+        jsCode = escapeClosingScript(jsCode);
+        jsCode = escapeNewLines(jsCode);
+        jsCode = escapeCarriageReturn(jsCode);
 
-	protected WebViewWrapperInterface mWebViewWrapper;
+        return String.format("%s.returnResultToJava(eval('%s'), %s);", JS_NAMESPACE, jsCode,
+                callbackIndex);
+    }
 
-	private final Context mContext;
+    @Override
+    public void callFunction(String jsCode, JsCallback resultCallback, String name, Object... args) {
+        jsCode += "; " + JsFunctionCallFormatter.toString(name, args);
+        evaluate(jsCode, resultCallback);
+    }
 
-	private final ArrayList<JsCallback> mResultCallbacks = new ArrayList<JsCallback>();
+    @Override
+    public void evaluate(String jsCode) {
+        evaluate(jsCode, null);
+    }
 
-	private HandlerWrapperInterface mHandler;
+    @Override
+    public void evaluate(String jsCode, JsCallback resultCallback) {
+        int callbackIndex = mResultCallbacks.size();
+        if (resultCallback == null) {
+            callbackIndex = -1;
+        }
 
-	public JsEvaluator(Context context) {
-		mContext = context;
-		mHandler = new HandlerWrapper();
-	}
+        final String js = JsEvaluator.getJsForEval(jsCode, callbackIndex);
 
-	@Override
-	public void callFunction(String jsCode, JsCallback resultCallback, String name, Object... args) {
-		jsCode += "; " + JsFunctionCallFormatter.toString(name, args);
-		evaluate(jsCode, resultCallback);
-	}
+        if (resultCallback != null) {
+            mResultCallbacks.add(resultCallback);
+        }
+        getWebViewWrapper().loadJavaScript(js);
+    }
 
-	@Override
-	public void evaluate(String jsCode) {
-		evaluate(jsCode, null);
-	}
+    public ArrayList<JsCallback> getResultCallbacks() {
+        return mResultCallbacks;
+    }
 
-	@Override
-	public void evaluate(String jsCode, JsCallback resultCallback) {
-		int callbackIndex = mResultCallbacks.size();
-		if (resultCallback == null) {
-			callbackIndex = -1;
-		}
+    public WebViewWrapperInterface getWebViewWrapper() {
+        if (mWebViewWrapper == null) {
+            mWebViewWrapper = new WebViewWrapper(mContext, this);
+        }
+        return mWebViewWrapper;
+    }
 
-		final String js = JsEvaluator.getJsForEval(jsCode, callbackIndex);
+    // Used in test only to replace webViewWrapper with a mock
+    public void setWebViewWrapper(WebViewWrapperInterface webViewWrapper) {
+        mWebViewWrapper = webViewWrapper;
+    }
 
-		if (resultCallback != null) {
-			mResultCallbacks.add(resultCallback);
-		}
-		getWebViewWrapper().loadJavaScript(js);
-	}
+    @Override
+    public void jsCallFinished(final String value, Integer callIndex) {
+        if (callIndex == -1)
+            return;
 
-	public ArrayList<JsCallback> getResultCallbacks() {
-		return mResultCallbacks;
-	}
+        final JsCallback callback = mResultCallbacks.get(callIndex);
 
-	public WebViewWrapperInterface getWebViewWrapper() {
-		if (mWebViewWrapper == null) {
-			mWebViewWrapper = new WebViewWrapper(mContext, this);
-		}
-		return mWebViewWrapper;
-	}
+        mHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                callback.onResult(value);
+            }
+        });
+    }
 
-	@Override
-	public void jsCallFinished(final String value, Integer callIndex) {
-		if (callIndex == -1)
-			return;
+    public void addJsInterface(Object obj, String name) {
+        getWebViewWrapper().addJsInterface(obj, name);
+    }
 
-		final JsCallback callback = mResultCallbacks.get(callIndex);
-
-		mHandler.post(new Runnable() {
-			@Override
-			public void run() {
-				callback.onResult(value);
-			}
-		});
-	}
-
-	public void addJsInterface(Object obj, String name){
-		getWebViewWrapper().addJsInterface(obj,name);
-	}
-
-	// Used in test only to replace mHandler with a mock
-	public void setHandler(HandlerWrapperInterface handlerWrapperInterface) {
-		mHandler = handlerWrapperInterface;
-	}
-
-	// Used in test only to replace webViewWrapper with a mock
-	public void setWebViewWrapper(WebViewWrapperInterface webViewWrapper) {
-		mWebViewWrapper = webViewWrapper;
-	}
+    // Used in test only to replace mHandler with a mock
+    public void setHandler(HandlerWrapperInterface handlerWrapperInterface) {
+        mHandler = handlerWrapperInterface;
+    }
 }

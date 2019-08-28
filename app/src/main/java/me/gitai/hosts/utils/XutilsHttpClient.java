@@ -10,11 +10,11 @@ import com.lidroid.xutils.util.PreferencesCookieStore;
  */
 public class XutilsHttpClient {
     private static HttpUtils client;
+
     /**
      * 单例模式获取实例对象
      *
-     * @param context
-     *            应用程序上下文
+     * @param context 应用程序上下文
      * @return HttpUtils对象实例
      */
     public synchronized static HttpUtils getInstence(Context context) {

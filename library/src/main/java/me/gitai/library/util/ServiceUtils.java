@@ -1,6 +1,5 @@
 package me.gitai.library.util;
 
-import android.accessibilityservice.AccessibilityService;
 import android.accessibilityservice.AccessibilityServiceInfo;
 import android.app.ActivityManager;
 import android.content.Context;
@@ -14,11 +13,10 @@ import java.util.List;
  * Created by dphdjy on 15-10-30.
  */
 public class ServiceUtils {
-    public static boolean isServiceRuning(Context packageContext,Class<?> cls){
-        Iterator localIterator = ((ActivityManager)packageContext.getSystemService(Context.ACTIVITY_SERVICE)).getRunningServices(Integer.MAX_VALUE).iterator();
-        while (localIterator.hasNext())
-        {
-            ActivityManager.RunningServiceInfo localRunningServiceInfo = (ActivityManager.RunningServiceInfo)localIterator.next();
+    public static boolean isServiceRuning(Context packageContext, Class<?> cls) {
+        Iterator localIterator = ((ActivityManager) packageContext.getSystemService(Context.ACTIVITY_SERVICE)).getRunningServices(Integer.MAX_VALUE).iterator();
+        while (localIterator.hasNext()) {
+            ActivityManager.RunningServiceInfo localRunningServiceInfo = (ActivityManager.RunningServiceInfo) localIterator.next();
 
             if (cls.getName().equals(localRunningServiceInfo.service.getClassName())) {
                 return true;
@@ -27,12 +25,11 @@ public class ServiceUtils {
         return false;
     }
 
-    public static boolean isAccessibilityEnabled(Context packageContext, String paramString)
-    {
-        List<AccessibilityServiceInfo> runingServices = ((AccessibilityManager)packageContext.getSystemService(Context.ACCESSIBILITY_SERVICE))
+    public static boolean isAccessibilityEnabled(Context packageContext, String paramString) {
+        List<AccessibilityServiceInfo> runingServices = ((AccessibilityManager) packageContext.getSystemService(Context.ACCESSIBILITY_SERVICE))
                 .getEnabledAccessibilityServiceList(AccessibilityEvent.TYPES_ALL_MASK);
-        for (AccessibilityServiceInfo service : runingServices){
-            String id =service.getId();
+        for (AccessibilityServiceInfo service : runingServices) {
+            String id = service.getId();
             if (id.contains(paramString))
                 return true;
         }
