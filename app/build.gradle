@@ -20,15 +20,16 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
-
-//    implementation 'org.apache.directory.studio:org.apache.commons.io:2.4'
-
+    //    implementation 'org.apache.directory.studio:org.apache.commons.io:2.4'
     implementation 'com.lidroid.xutils:xutils:2.6.13'
     implementation 'com.readystatesoftware.systembartint:systembartint:1.0.4'
-
     implementation project(':library')
 }
